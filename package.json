@@ -1,0 +1,26 @@
+{
+  "name": "university-canteen-ordering-system",
+  "version": "1.0.0",
+  "description": "Online food ordering system for university canteen",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "vercel-build": "cd frontend && npm install && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test"
+  },
+  "devDependencies": {
+    "browserslist": "^4.27.0",
+    "caniuse-lite": "^1.0.30001754",
+    "concurrently": "^8.2.2"
+  }
+}
