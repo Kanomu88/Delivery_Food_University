@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminService } from '../services/adminService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
 import Modal from '../components/common/Modal';
 import './AdminVendorsPage.css';
 
 const AdminVendorsPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [vendors, setVendors] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,7 +31,7 @@ const AdminVendorsPage = () => {
       const response = await adminService.getAllVendors(params);
       setVendors(response.data?.vendors || []);
     } catch (error) {
-      showToast(t('admin.vendors.loadError'), 'error');
+      showNotification(t('admin.vendors.loadError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -47,20 +47,20 @@ const AdminVendorsPage = () => {
     try {
       if (actionType === 'approve') {
         await adminService.approveVendor(selectedVendor._id);
-        showToast(t('admin.vendors.approveSuccess'), 'success');
+        showNotification(t('admin.vendors.approveSuccess'), 'success');
       } else if (actionType === 'suspend') {
         await adminService.suspendVendor(selectedVendor._id);
-        showToast(t('admin.vendors.suspendSuccess'), 'success');
+        showNotification(t('admin.vendors.suspendSuccess'), 'success');
       } else if (actionType === 'unsuspend') {
         await adminService.suspendVendor(selectedVendor._id);
-        showToast(t('admin.vendors.unsuspendSuccess'), 'success');
+        showNotification(t('admin.vendors.unsuspendSuccess'), 'success');
       }
       setShowActionModal(false);
       setSelectedVendor(null);
       setActionType(null);
       fetchVendors();
     } catch (error) {
-      showToast(t('admin.vendors.actionError'), 'error');
+      showNotification(t('admin.vendors.actionError'), 'error');
     }
   };
 

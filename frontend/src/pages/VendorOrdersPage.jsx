@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { io } from 'socket.io-client';
 import { orderService } from '../services/orderService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import { useAuth } from '../hooks/useAuth';
 import Loading from '../components/common/Loading';
 import './VendorOrdersPage.css';
 
 const VendorOrdersPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -56,7 +56,7 @@ const VendorOrdersPage = () => {
         }
         return prevOrders;
       });
-      showToast(t('vendor.orders.newOrderReceived'), 'info');
+      showNotification(t('vendor.orders.newOrderReceived') || 'New order received!', 'info');
     });
 
     // Listen for order cancellations
@@ -67,7 +67,7 @@ const VendorOrdersPage = () => {
           order._id === data.orderId ? { ...order, status: 'cancelled' } : order
         )
       );
-      showToast(t('vendor.orders.orderCancelled'), 'warning');
+      showNotification(t('vendor.orders.orderCancelled') || 'Order cancelled', 'warning');
     });
 
     return () => {
@@ -84,7 +84,8 @@ const VendorOrdersPage = () => {
       const data = await orderService.getVendorOrders(params);
       setOrders(data.orders || []);
     } catch (error) {
-      showToast(t('vendor.orders.loadError'), 'error');
+      console.error('Error fetching orders:', error);
+      showNotification(t('vendor.orders.loadError') || 'Failed to load orders', 'error');
     } finally {
       setLoading(false);
     }
@@ -94,7 +95,7 @@ const VendorOrdersPage = () => {
     try {
       setUpdatingOrderId(orderId);
       await orderService.updateOrderStatus(orderId, newStatus);
-      showToast(t('vendor.orders.statusUpdated'), 'success');
+      showNotification(t('vendor.orders.statusUpdated') || 'Status updated successfully', 'success');
       
       // Update local state
       setOrders(prevOrders =>

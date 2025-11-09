@@ -29,10 +29,8 @@
 
 | Role | Email | Password | คำอธิบาย |
 |------|-------|----------|----------|
-| **Admin** | admin@canteen.com | password123 | จัดการระบบทั้งหมด |
-| **Vendor 1** | vendor1@canteen.com | password123 | ร้านข้าวมันไก่ |
-| **Vendor 2** | vendor2@canteen.com | password123 | ร้านก่วยเตี๋ยว |
-| **Vendor 3** | vendor3@canteen.com | password123 | ร้านอาหารตามสั่ง |
+| **Admin** | admin@test.com | password123 | จัดการระบบทั้งหมด (3 บัญชี) |
+| **Vendor** | vendor@test.com | password123 | ร้านอาหารตามสั่ง (25 เมนู) |
 | **Customer** | customer@test.com | password123 | ลูกค้าทั่วไป |
 
 ## 🍽️ ข้อมูลเมนูที่มีในระบบ (15 รายการ)
@@ -257,8 +255,8 @@ node scripts/fixIndexes.js
 
 ### 📝 บัญชีทดสอบ:
 - Customer: customer@test.com / password123
-- Vendor: vendor1@canteen.com / password123
-- Admin: admin@canteen.com / password123
+- Vendor: vendor@test.com / password123 (ร้านอาหารตามสั่ง - 25 เมนู)
+- Admin: admin@test.com / password123
 
 ---
 

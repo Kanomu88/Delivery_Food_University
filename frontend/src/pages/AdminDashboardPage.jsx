@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { adminService } from '../services/adminService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
 import './AdminDashboardPage.css';
 
 const AdminDashboardPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [statsAnimated, setStatsAnimated] = useState(false);
@@ -29,7 +29,7 @@ const AdminDashboardPage = () => {
       const response = await adminService.getSystemReports();
       setDashboardData(response.data || {});
     } catch (error) {
-      showToast(t('admin.dashboard.loadError'), 'error');
+      showNotification(t('admin.dashboard.loadError'), 'error');
     } finally {
       setLoading(false);
     }

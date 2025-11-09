@@ -178,8 +178,8 @@ const testAllPages = async () => {
   console.log(`   Backend:  ${API_URL}`);
   console.log('\n📝 Test Accounts:');
   console.log('   Customer: customer@test.com / password123');
-  console.log('   Vendor:   vendor1@canteen.com / password123');
-  console.log('   Admin:    admin@canteen.com / password123');
+  console.log('   Vendor:   vendor@test.com / password123 (ร้านอาหารตามสั่ง - 25 เมนู)');
+  console.log('   Admin:    admin@test.com / password123');
 
   process.exit(failedTests > 0 ? 1 : 0);
 };

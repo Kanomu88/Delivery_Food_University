@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminService } from '../services/adminService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
 import './AdminReportsPage.css';
 
 const AdminReportsPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [reportData, setReportData] = useState(null);
   const [startDate, setStartDate] = useState('');
@@ -35,7 +35,7 @@ const AdminReportsPage = () => {
       const response = await adminService.getSystemReports(params);
       setReportData(response.data || {});
     } catch (error) {
-      showToast(t('admin.reports.loadError'), 'error');
+      showNotification(t('admin.reports.loadError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ const AdminReportsPage = () => {
   const handleApplyFilter = () => {
     if (startDate && endDate) {
       if (new Date(startDate) > new Date(endDate)) {
-        showToast('Start date must be before end date', 'error');
+        showNotification('Start date must be before end date', 'error');
         return;
       }
       fetchReports(startDate, endDate);

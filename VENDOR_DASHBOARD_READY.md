@@ -45,7 +45,7 @@ https://university-canteen-ordering-system.vercel.app/vendor
    ```
 
 2. **คลิกปุ่ม "ใช้บัญชีนี้"** ใต้ "🏪 ร้านค้า (Vendor)"
-   - Email: `vendor1@canteen.com`
+   - Email: `vendor@test.com`
    - Password: `password123`
 
 3. **คลิก "Login"**
@@ -112,25 +112,22 @@ https://university-canteen-ordering-system.vercel.app/vendor
 
 ---
 
-## 📝 บัญชี Vendor ทั้งหมด
+## 📝 บัญชี Vendor
 
-### Vendor 1 - ร้านข้าวมันไก่
+### ร้านอาหารตามสั่ง
 ```
-Email:    vendor1@canteen.com
+Email:    vendor@test.com
 Password: password123
-```
-
-### Vendor 2 - ร้านก่วยเตี๋ยว
-```
-Email:    vendor2@canteen.com
-Password: password123
+Username: vendor1
+Shop:     ร้านอาหารตามสั่ง
+Menus:    25 รายการ
 ```
 
-### Vendor 3 - ร้านอาหารตามสั่ง
-```
-Email:    vendor3@canteen.com
-Password: password123
-```
+**เมนูในร้าน:**
+- อาหารจานหลัก: 11 รายการ
+- ของว่าง: 4 รายการ
+- เครื่องดื่ม: 6 รายการ
+- ของหวาน: 4 รายการ
 
 ---
 
@@ -152,7 +149,7 @@ https://university-canteen-ordering-system.vercel.app/vendor/dashboard
 
 **Login ด้วย:**
 ```
-vendor1@canteen.com / password123
+vendor@test.com / password123
 ```
 
 ---

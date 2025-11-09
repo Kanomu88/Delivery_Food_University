@@ -15,8 +15,8 @@
 ### 3. Login Vendor/Admin ไม่ได้ ✅
 **ปัญหา**: Email ในหน้า Login ผิด  
 **แก้ไข**: อัพเดทเป็น email ที่ถูกต้อง
-- Vendor: `vendor1@canteen.com`
-- Admin: `admin@canteen.com`  
+- Vendor: `vendor@test.com`
+- Admin: `admin@test.com`  
 **ผลลัพธ์**: Login ได้ทุก role
 
 ### 4. WebSocket และ Notification Errors ✅
@@ -56,7 +56,7 @@ Password: password123
 
 ### ร้านค้า (Vendor) 🏪
 ```
-Email:    vendor1@canteen.com
+Email:    vendor@test.com
 Password: password123
 ```
 **สามารถทำได้:**
@@ -66,14 +66,13 @@ Password: password123
 - อัพเดทสถานะ
 - Logout ได้
 
-**ร้านอื่นๆ:**
-- `vendor2@canteen.com` / `password123`
-- `vendor3@canteen.com` / `password123`
+**เมนูในร้าน:** 25 รายการ
 
 ### แอดมิน (Admin) 👨‍💼
 ```
-Email:    admin@canteen.com
+Email:    admin@test.com
 Password: password123
+Username: admin1
 ```
 **สามารถทำได้:**
 - Login สำเร็จ
@@ -142,8 +141,8 @@ https://university-canteen-ordering-system.vercel.app
 ### 2. Login
 เลือกบัญชีที่ต้องการ:
 - **Customer**: `customer@test.com` / `password123`
-- **Vendor**: `vendor1@canteen.com` / `password123`
-- **Admin**: `admin@canteen.com` / `password123`
+- **Vendor**: `vendor@test.com` / `password123` (ร้านอาหารตามสั่ง - 25 เมนู)
+- **Admin**: `admin@test.com` / `password123`
 
 ### 3. ใช้งานตาม Role
 - **Customer**: ดูเมนู → เพิ่มลงตะกร้า → สั่งอาหาร
@@ -214,8 +213,8 @@ https://university-canteen-ordering-system.vercel.app
 
 **📝 บัญชีทดสอบ:**
 - Customer: `customer@test.com` / `password123`
-- Vendor: `vendor1@canteen.com` / `password123`
-- Admin: `admin@canteen.com` / `password123`
+- Vendor: `vendor@test.com` / `password123` (ร้านอาหารตามสั่ง - 25 เมนู)
+- Admin: `admin@test.com` / `password123`
 
 ---
 

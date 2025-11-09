@@ -9,8 +9,8 @@ const testLogin = async () => {
         // Test accounts
         const accounts = [
             { email: 'customer@test.com', password: 'password123', role: 'customer' },
-            { email: 'vendor1@canteen.com', password: 'password123', role: 'vendor' },
-            { email: 'admin@canteen.com', password: 'password123', role: 'admin' },
+            { email: 'vendor@test.com', password: 'password123', role: 'vendor' },
+            { email: 'admin@test.com', password: 'password123', role: 'admin' },
         ];
 
         for (const account of accounts) {

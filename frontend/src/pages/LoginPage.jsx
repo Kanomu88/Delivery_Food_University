@@ -85,24 +85,24 @@ const LoginPage = () => {
           </div>
           <div className="demo-account">
             <strong>🏪 ร้านค้า (Vendor)</strong>
-            <div><code>vendor1@canteen.com</code> / <code>password123</code></div>
+            <div><code>vendor@test.com</code> / <code>password123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'vendor1@canteen.com', password: 'password123' })}
+              onClick={() => setFormData({ email: 'vendor@test.com', password: 'password123' })}
             >
               ใช้บัญชีนี้
             </button>
           </div>
           <div className="demo-account">
             <strong>👨‍💼 แอดมิน (Admin)</strong>
-            <div><code>admin@canteen.com</code> / <code>password123</code></div>
+            <div><code>admin@test.com</code> / <code>password123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'admin@canteen.com', password: 'password123' })}
+              onClick={() => setFormData({ email: 'admin@test.com', password: 'password123' })}
             >
               ใช้บัญชีนี้
             </button>

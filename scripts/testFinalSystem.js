@@ -52,7 +52,7 @@ const testFinalSystem = async () => {
   console.log('3️⃣ Testing Vendor Login...');
   try {
     const response = await axios.post(`${API_URL}/auth/login`, {
-      email: 'vendor1@canteen.com',
+      email: 'vendor@test.com',
       password: 'password123'
     });
     if (response.data.success && response.data.data.user.role === 'vendor') {
@@ -73,7 +73,7 @@ const testFinalSystem = async () => {
   console.log('4️⃣ Testing Admin Login...');
   try {
     const response = await axios.post(`${API_URL}/auth/login`, {
-      email: 'admin@canteen.com',
+      email: 'admin@test.com',
       password: 'password123'
     });
     if (response.data.success && response.data.data.user.role === 'admin') {
@@ -129,10 +129,10 @@ const testFinalSystem = async () => {
   if (failed === 0) {
     console.log('🎉 ALL ISSUES FIXED!');
     console.log('═══════════════════════════════════════');
-    console.log('✅ Menu Page - Will show 15 menus');
+    console.log('✅ Menu Page - Will show 25 menus');
     console.log('✅ Logout Button - Will work correctly');
-    console.log('✅ Vendor Login - vendor1@canteen.com');
-    console.log('✅ Admin Login - admin@canteen.com');
+    console.log('✅ Vendor Login - vendor@test.com (ร้านอาหารตามสั่ง)');
+    console.log('✅ Admin Login - admin@test.com');
     console.log('═══════════════════════════════════════\n');
     console.log('🌐 Ready to use:');
     console.log('   https://university-canteen-ordering-system.vercel.app\n');

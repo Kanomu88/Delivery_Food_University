@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminService } from '../services/adminService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
 import Modal from '../components/common/Modal';
 import './AdminUsersPage.css';
 
 const AdminUsersPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,7 +31,7 @@ const AdminUsersPage = () => {
       const response = await adminService.getAllUsers(params);
       setUsers(response.data?.users || []);
     } catch (error) {
-      showToast(t('admin.users.loadError'), 'error');
+      showNotification(t('admin.users.loadError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -45,7 +45,7 @@ const AdminUsersPage = () => {
   const handleBanConfirm = async () => {
     try {
       await adminService.toggleUserBan(selectedUser._id);
-      showToast(
+      showNotification(
         selectedUser.status === 'banned'
           ? t('admin.users.unbanSuccess')
           : t('admin.users.banSuccess'),
@@ -55,7 +55,7 @@ const AdminUsersPage = () => {
       setSelectedUser(null);
       fetchUsers();
     } catch (error) {
-      showToast(t('admin.users.banError'), 'error');
+      showNotification(t('admin.users.banError'), 'error');
     }
   };
 

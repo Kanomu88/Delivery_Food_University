@@ -247,13 +247,11 @@ Warm Requests:  ~500ms ✅
 
 ## 📝 Test Accounts Verified
 
-| Email | Password | Role | Status |
-|-------|----------|------|--------|
-| admin@canteen.com | password123 | admin | ✅ Working |
-| vendor1@canteen.com | password123 | vendor | ✅ Working |
-| vendor2@canteen.com | password123 | vendor | ✅ Working |
-| vendor3@canteen.com | password123 | vendor | ✅ Working |
-| customer@test.com | password123 | customer | ✅ Working |
+| Email | Password | Role | Status | Note |
+|-------|----------|------|--------|------|
+| admin@test.com | password123 | admin | ✅ Working | แอดมิน |
+| vendor@test.com | password123 | vendor | ✅ Working | ร้านอาหารตามสั่ง (25 เมนู) |
+| customer@test.com | password123 | customer | ✅ Working | ลูกค้า |
 
 ---
 

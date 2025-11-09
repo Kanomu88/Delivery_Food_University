@@ -66,8 +66,10 @@ Password: password123
 
 ### ร้านค้า (Vendor) 🏪
 ```
-Email:    vendor1@canteen.com
+Email:    vendor@test.com
 Password: password123
+Username: vendor1
+Shop:     ร้านอาหารตามสั่ง
 ```
 **Features:**
 - ✅ Login/Logout
@@ -76,14 +78,13 @@ Password: password123
 - ✅ อัพเดทสถานะออเดอร์
 - ✅ ดูรายงานยอดขาย
 
-**ร้านอื่นๆ:**
-- `vendor2@canteen.com` / `password123` (ร้านก่วยเตี๋ยว)
-- `vendor3@canteen.com` / `password123` (ร้านอาหารตามสั่ง)
+**เมนูในร้าน:** 25 รายการ (อาหารจานหลัก 11, ของว่าง 4, เครื่องดื่ม 6, ของหวาน 4)
 
 ### แอดมิน (Admin) 👨‍💼
 ```
-Email:    admin@canteen.com
+Email:    admin@test.com
 Password: password123
+Username: admin1
 ```
 **Features:**
 - ✅ Login/Logout
@@ -197,8 +198,8 @@ Password: password123
 
 2. **Login** (เลือก 1 ใน 3)
    - Customer: `customer@test.com` / `password123`
-   - Vendor: `vendor1@canteen.com` / `password123`
-   - Admin: `admin@canteen.com` / `password123`
+   - Vendor: `vendor@test.com` / `password123` (ร้านอาหารตามสั่ง - 25 เมนู)
+   - Admin: `admin@test.com` / `password123`
 
 3. **ใช้งานตาม Role**
    - **Customer**: Menu → Add to Cart → Checkout → Orders
@@ -295,8 +296,8 @@ https://university-canteen-ordering-system.vercel.app
 **📝 บัญชีทดสอบ:**
 ```
 Customer: customer@test.com / password123
-Vendor:   vendor1@canteen.com / password123
-Admin:    admin@canteen.com / password123
+Vendor:   vendor@test.com / password123 (ร้านอาหารตามสั่ง - 25 เมนู)
+Admin:    admin@test.com / password123
 ```
 
 ---

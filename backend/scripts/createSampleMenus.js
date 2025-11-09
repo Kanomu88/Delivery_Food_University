@@ -38,7 +38,7 @@ const Vendor = mongoose.model('Vendor', vendorSchema);
 const MenuItem = mongoose.model('MenuItem', menuItemSchema);
 
 const sampleMenus = [
-  // อาหารจานหลัก
+  // อาหารจานหลัก (Main Dishes)
   {
     name: 'ข้าวผัดกุ้ง',
     nameEn: 'Shrimp Fried Rice',
@@ -48,6 +48,16 @@ const sampleMenus = [
     category: 'main_dish',
     allergenInfo: 'กุ้ง, ไข่',
     image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400'
+  },
+  {
+    name: 'ข้าวผัดไก่',
+    nameEn: 'Chicken Fried Rice',
+    description: 'ข้าวผัดไก่หอมกรุ่น ผัดกับผักสดใหม่',
+    descriptionEn: 'Aromatic chicken fried rice with fresh vegetables',
+    price: 45,
+    category: 'main_dish',
+    allergenInfo: 'ไข่',
+    image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400'
   },
   {
     name: 'ผัดกะเพราหมูสับ',
@@ -99,8 +109,48 @@ const sampleMenus = [
     allergenInfo: 'ไม่มี',
     image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400'
   },
+  {
+    name: 'ผัดไทยกุ้งสด',
+    nameEn: 'Pad Thai with Shrimp',
+    description: 'ผัดไทยรสชาติต้นตำรับ กุ้งสดใหญ่ เส้นเหนียวนุ่ม',
+    descriptionEn: 'Authentic Pad Thai with fresh large shrimp',
+    price: 55,
+    category: 'main_dish',
+    allergenInfo: 'กุ้ง, ไข่, ถั่ว',
+    image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400'
+  },
+  {
+    name: 'ต้มยำกุ้ง',
+    nameEn: 'Tom Yum Goong',
+    description: 'ต้มยำกุ้งน้ำข้น รสจัดจ้าน เผ็ดร้อน เปรี้ยว',
+    descriptionEn: 'Spicy and sour Thai soup with shrimp',
+    price: 60,
+    category: 'main_dish',
+    allergenInfo: 'กุ้ง',
+    image: 'https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=400'
+  },
+  {
+    name: 'ส้มตำไทย',
+    nameEn: 'Thai Papaya Salad',
+    description: 'ส้มตำรสชาติต้นตำรับ เผ็ดร้อนกำลังดี',
+    descriptionEn: 'Traditional spicy green papaya salad',
+    price: 35,
+    category: 'main_dish',
+    allergenInfo: 'กุ้ง, ถั่ว',
+    image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400'
+  },
+  {
+    name: 'แกงเขียวหวานไก่',
+    nameEn: 'Green Curry Chicken',
+    description: 'แกงเขียวหวานไก่ กะทิเข้มข้น เครื่องแกงหอมกรุ่น',
+    descriptionEn: 'Thai green curry with chicken in coconut milk',
+    price: 50,
+    category: 'main_dish',
+    allergenInfo: 'นม',
+    image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=400'
+  },
   
-  // ของว่าง
+  // ของว่าง (Snacks)
   {
     name: 'ขนมปังปิ้งเนยนม',
     nameEn: 'Butter Toast',
@@ -121,8 +171,28 @@ const sampleMenus = [
     allergenInfo: 'ข้าวสาลี, ถั่วเหลือง',
     image: 'https://images.unsplash.com/photo-1541599468348-e96984315921?w=400'
   },
+  {
+    name: 'ไก่ทอด',
+    nameEn: 'Fried Chicken',
+    description: 'ไก่ทอดกรอบนอกนุ่มใน เสิร์ฟพร้อมซอสมะนาว',
+    descriptionEn: 'Crispy fried chicken with lime sauce',
+    price: 35,
+    category: 'snack',
+    allergenInfo: 'ไข่, ข้าวสาลี',
+    image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400'
+  },
+  {
+    name: 'ปอเปี๊ยะทอด',
+    nameEn: 'Spring Rolls',
+    description: 'ปอเปี๊ยะทอดกรอบ ไส้ผักและเนื้อสัตว์',
+    descriptionEn: 'Crispy spring rolls with vegetables and meat',
+    price: 30,
+    category: 'snack',
+    allergenInfo: 'ข้าวสาลี',
+    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400'
+  },
   
-  // เครื่องดื่ม
+  // เครื่องดื่ม (Beverages)
   {
     name: 'ชาเย็น',
     nameEn: 'Thai Iced Tea',
@@ -163,8 +233,28 @@ const sampleMenus = [
     allergenInfo: 'ไม่มี',
     image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400'
   },
+  {
+    name: 'โกโก้เย็น',
+    nameEn: 'Iced Chocolate',
+    description: 'โกโก้เย็นหอมมัน รสชาติเข้มข้น',
+    descriptionEn: 'Rich and creamy iced chocolate',
+    price: 25,
+    category: 'beverage',
+    allergenInfo: 'นม',
+    image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=400'
+  },
+  {
+    name: 'น้ำมะนาว',
+    nameEn: 'Lime Juice',
+    description: 'น้ำมะนาวสดชื่น เปรี้ยวหวานกำลังดี',
+    descriptionEn: 'Refreshing lime juice',
+    price: 20,
+    category: 'beverage',
+    allergenInfo: 'ไม่มี',
+    image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9d?w=400'
+  },
   
-  // ของหวาน
+  // ของหวาน (Desserts)
   {
     name: 'ข้าวเหนียวมะม่วง',
     nameEn: 'Mango Sticky Rice',
@@ -184,6 +274,26 @@ const sampleMenus = [
     category: 'dessert',
     allergenInfo: 'นม',
     image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400'
+  },
+  {
+    name: 'ทับทิมกรอบ',
+    nameEn: 'Red Rubies in Coconut Milk',
+    description: 'ทับทิมกรอบเย็นชื่นใจ ในน้ำกะทิหวาน',
+    descriptionEn: 'Water chestnuts in sweet coconut milk with ice',
+    price: 30,
+    category: 'dessert',
+    allergenInfo: 'นม',
+    image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400'
+  },
+  {
+    name: 'กล้วยบวชชี',
+    nameEn: 'Banana in Coconut Milk',
+    description: 'กล้วยน้ำว้าสุกบวชในน้ำกะทิหวาน',
+    descriptionEn: 'Ripe banana in sweet coconut milk',
+    price: 25,
+    category: 'dessert',
+    allergenInfo: 'นม',
+    image: 'https://images.unsplash.com/photo-1587241321921-91a834d82ffc?w=400'
   }
 ];
 

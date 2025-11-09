@@ -5,14 +5,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { paymentService } from '../services/paymentService';
 import { orderService } from '../services/orderService';
 import Loading from '../components/common/Loading';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import './PaymentPage.css';
 
 const PaymentPage = () => {
   const { t } = useTranslation();
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [selectedMethod, setSelectedMethod] = useState('qr_code');
   const [paymentData, setPaymentData] = useState(null);
   const [paymentError, setPaymentError] = useState(null);
@@ -27,7 +27,7 @@ const PaymentPage = () => {
     onSuccess: (data) => {
       setPaymentData(data.data);
       setPaymentError(null);
-      showToast(t('payment.initiated'), 'success');
+      showNotification(t('payment.initiated'), 'success');
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.error?.message || t('payment.error');
@@ -38,7 +38,7 @@ const PaymentPage = () => {
         details: errorDetails,
       });
       
-      showToast(errorMessage, 'error');
+      showNotification(errorMessage, 'error');
     },
   });
 
@@ -47,7 +47,7 @@ const PaymentPage = () => {
     onSuccess: (data) => {
       setPaymentData(data.data);
       setPaymentError(null);
-      showToast(t('payment.retrySuccess'), 'success');
+      showNotification(t('payment.retrySuccess'), 'success');
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.error?.message || t('payment.retryError');
@@ -58,7 +58,7 @@ const PaymentPage = () => {
         details: errorDetails,
       });
       
-      showToast(errorMessage, 'error');
+      showNotification(errorMessage, 'error');
     },
   });
 

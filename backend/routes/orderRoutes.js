@@ -14,14 +14,14 @@ import { validateOrder } from '../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
+// Vendor routes (must come before /:id routes)
+router.get('/vendor/orders', authenticate, authorize('vendor'), getVendorOrders);
+router.put('/:id/status', authenticate, authorize('vendor'), updateOrderStatus);
+
 // Customer routes
 router.post('/', authenticate, authorize('customer'), orderLimiter, validateOrder, createOrder);
 router.get('/', authenticate, getUserOrders);
 router.get('/:id', authenticate, getOrderById);
 router.put('/:id/cancel', authenticate, authorize('customer'), cancelOrder);
-
-// Vendor routes
-router.get('/vendor/orders', authenticate, authorize('vendor'), getVendorOrders);
-router.put('/:id/status', authenticate, authorize('vendor'), updateOrderStatus);
 
 export default router;

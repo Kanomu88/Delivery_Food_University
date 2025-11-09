@@ -139,6 +139,50 @@ Frontend will run on `http://localhost:5173`
 - `GET /api/admin/orders` - Get all orders
 - `GET /api/admin/reports` - Get system reports
 
+## Demo Accounts
+
+For testing purposes, use these pre-configured accounts:
+
+### Customer Account 👤
+```
+Email:    customer@test.com
+Password: password123
+Username: customer1
+```
+**Capabilities:**
+- Browse 25 menu items
+- Search and filter menus
+- Add items to cart
+- Place orders
+- Track order status
+
+### Vendor Account 🏪
+```
+Email:    vendor@test.com
+Password: password123
+Username: vendor1
+Shop:     ร้านอาหารตามสั่ง
+```
+**Capabilities:**
+- Manage 25 menu items (11 main dishes, 4 snacks, 6 beverages, 4 desserts)
+- View incoming orders
+- Update order status
+- View sales reports
+- Manage shop profile
+
+### Admin Account 👨‍💼
+```
+Email:    admin@test.com
+Password: password123
+Username: admin1
+```
+**Capabilities:**
+- Manage all users (3 accounts)
+- Approve/suspend vendors
+- View system reports
+- Manage all orders
+- System-wide statistics
+
 ## Default User Roles
 
 You can register users with different roles:

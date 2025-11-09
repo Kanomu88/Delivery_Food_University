@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect } from 'react';
+import './Toast.css';
 
-const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true);
-
+const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(onClose, 300); // Wait for animation
-    }, duration);
+    if (duration > 0) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, duration);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, [duration, onClose]);
 
   const getIcon = () => {
@@ -21,20 +20,20 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
         return '✕';
       case 'warning':
         return '⚠';
+      case 'info':
       default:
         return 'ℹ';
     }
   };
 
-  return createPortal(
-    <div className={`toast toast-${type} ${isVisible ? 'toast-enter' : 'toast-exit'}`}>
-      <span className="toast-icon">{getIcon()}</span>
-      <span className="toast-message">{message}</span>
-      <button className="toast-close" onClick={() => setIsVisible(false)}>
+  return (
+    <div className={`toast toast-${type}`}>
+      <div className="toast-icon">{getIcon()}</div>
+      <div className="toast-message">{message}</div>
+      <button className="toast-close" onClick={onClose}>
         ×
       </button>
-    </div>,
-    document.body
+    </div>
   );
 };
 

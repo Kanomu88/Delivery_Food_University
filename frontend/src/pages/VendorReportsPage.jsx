@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { vendorService } from '../services/vendorService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
 import './VendorReportsPage.css';
 
 const VendorReportsPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [salesData, setSalesData] = useState(null);
   const [popularMenus, setPopularMenus] = useState([]);
@@ -30,7 +30,8 @@ const VendorReportsPage = () => {
       setSalesData(sales);
       setPopularMenus(popular.popularMenus || []);
     } catch (error) {
-      showToast(t('vendor.reports.loadError'), 'error');
+      console.error('Error fetching reports:', error);
+      showNotification(error.response?.data?.error?.message || t('vendor.reports.loadError'), 'error');
     } finally {
       setLoading(false);
     }

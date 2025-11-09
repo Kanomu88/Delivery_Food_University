@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { useCart } from '../hooks/useCart';
 import { orderService } from '../services/orderService';
+import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const { t } = useTranslation();

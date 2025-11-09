@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { menuService } from '../services/menuService';
-import { useToast } from '../hooks/useToast';
+import { useNotification } from '../contexts/NotificationContext';
 import { getImageUrl } from '../utils/imageHelper';
 import Loading from '../components/common/Loading';
 import Modal from '../components/common/Modal';
@@ -9,7 +9,7 @@ import './VendorMenuPage.css';
 
 const VendorMenuPage = () => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -39,7 +39,8 @@ const VendorMenuPage = () => {
       const data = await menuService.getVendorMenus();
       setMenuItems(data.menus || []);
     } catch (error) {
-      showToast(t('vendor.menu.loadError'), 'error');
+      console.error('Error fetching menus:', error);
+      showNotification(error.response?.data?.error?.message || t('vendor.menu.loadError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -100,13 +101,13 @@ const VendorMenuPage = () => {
       // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        showToast(t('vendor.menu.invalidImageType'), 'error');
+        showNotification(t('vendor.menu.invalidImageType'), 'error');
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        showToast(t('vendor.menu.imageTooLarge'), 'error');
+        showNotification(t('vendor.menu.imageTooLarge'), 'error');
         return;
       }
 
@@ -124,7 +125,7 @@ const VendorMenuPage = () => {
     
     // Validate required fields
     if (!formData.name || !formData.price) {
-      showToast(t('vendor.menu.validationError'), 'error');
+      showNotification(t('vendor.menu.validationError'), 'error');
       return;
     }
 
@@ -139,7 +140,7 @@ const VendorMenuPage = () => {
           const uploadResult = await menuService.uploadMenuImage(imageFile);
           imageUrl = uploadResult.data.imageUrl;
         } catch (uploadError) {
-          showToast(t('vendor.menu.imageUploadError'), 'error');
+          showNotification(t('vendor.menu.imageUploadError'), 'error');
           setSubmitting(false);
           return;
         }
@@ -153,16 +154,16 @@ const VendorMenuPage = () => {
 
       if (editingItem) {
         await menuService.updateMenuItem(editingItem._id, menuData);
-        showToast(t('vendor.menu.updateSuccess'), 'success');
+        showNotification(t('vendor.menu.updateSuccess'), 'success');
       } else {
         await menuService.createMenuItem(menuData);
-        showToast(t('vendor.menu.createSuccess'), 'success');
+        showNotification(t('vendor.menu.createSuccess'), 'success');
       }
 
       handleCloseModal();
       fetchMenuItems();
     } catch (error) {
-      showToast(
+      showNotification(
         editingItem ? t('vendor.menu.updateError') : t('vendor.menu.createError'),
         'error'
       );
@@ -179,9 +180,9 @@ const VendorMenuPage = () => {
       setMenuItems(prev =>
         prev.map(m => (m._id === item._id ? { ...m, isAvailable: !m.isAvailable } : m))
       );
-      showToast(t('vendor.menu.updateSuccess'), 'success');
+      showNotification(t('vendor.menu.updateSuccess'), 'success');
     } catch (error) {
-      showToast(t('vendor.menu.updateError'), 'error');
+      showNotification(t('vendor.menu.updateError'), 'error');
     }
   };
 
@@ -192,10 +193,10 @@ const VendorMenuPage = () => {
 
     try {
       await menuService.deleteMenuItem(item._id);
-      showToast(t('vendor.menu.deleteSuccess'), 'success');
+      showNotification(t('vendor.menu.deleteSuccess'), 'success');
       fetchMenuItems();
     } catch (error) {
-      showToast(t('vendor.menu.deleteError'), 'error');
+      showNotification(t('vendor.menu.deleteError'), 'error');
     }
   };
 
