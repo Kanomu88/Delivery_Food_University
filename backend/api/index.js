@@ -249,7 +249,14 @@ app.get('/api/menus/vendor/my-menus', authenticate, async (req, res) => {
       return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
     }
 
-    const menus = await Menu.find({ vendor: req.user._id })
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Get menus using vendorId
+    const menus = await Menu.find({ vendorId: vendor._id })
       .sort({ createdAt: -1 });
 
     res.json({ success: true, data: menus, count: menus.length });
@@ -258,10 +265,95 @@ app.get('/api/menus/vendor/my-menus', authenticate, async (req, res) => {
   }
 });
 
+// Create menu
+app.post('/api/menus', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can create menus' } });
+    }
+
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    const menuData = {
+      ...req.body,
+      vendorId: vendor._id,
+    };
+
+    const menu = await Menu.create(menuData);
+    res.status(201).json({ success: true, data: menu });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Update menu
+app.put('/api/menus/:id', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can update menus' } });
+    }
+
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Check if menu belongs to vendor
+    const menu = await Menu.findOne({ _id: req.params.id, vendorId: vendor._id });
+    if (!menu) {
+      return res.status(404).json({ success: false, error: { message: 'Menu not found or unauthorized' } });
+    }
+
+    const updatedMenu = await Menu.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.json({ success: true, data: updatedMenu });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Delete menu
+app.delete('/api/menus/:id', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can delete menus' } });
+    }
+
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Check if menu belongs to vendor
+    const menu = await Menu.findOne({ _id: req.params.id, vendorId: vendor._id });
+    if (!menu) {
+      return res.status(404).json({ success: false, error: { message: 'Menu not found or unauthorized' } });
+    }
+
+    await Menu.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Menu deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
 app.get('/api/menus/:id', async (req, res) => {
   try {
     await connectDB();
-    const menu = await Menu.findById(req.params.id).populate('vendor', 'name email phone');
+    const menu = await Menu.findById(req.params.id).populate('vendorId', 'name location');
     
     if (!menu) {
       return res.status(404).json({ success: false, error: { message: 'Menu not found' } });
@@ -500,7 +592,14 @@ app.get('/api/vendors/dashboard', authenticate, async (req, res) => {
       return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
     }
 
-    const vendorMenus = await Menu.find({ vendor: req.user._id });
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Get vendor's menus using vendorId
+    const vendorMenus = await Menu.find({ vendorId: vendor._id });
     const menuIds = vendorMenus.map(m => m._id);
     
     const orders = await Order.find({ 'items.menu': { $in: menuIds } });
