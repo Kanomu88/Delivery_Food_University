@@ -35,7 +35,9 @@ const AdminReportsPage = () => {
 
       const data = await response.json();
       if (data.success) {
-        setReportRequests(data.data.reportRequests);
+        // รองรับทั้ง 2 format: { data: { reportRequests: [...] } } และ { data: [...] }
+        const requestsData = data.data?.reportRequests || data.data || [];
+        setReportRequests(Array.isArray(requestsData) ? requestsData : []);
       }
     } catch (error) {
       console.error('Error fetching report requests:', error);

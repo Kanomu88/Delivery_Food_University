@@ -28,7 +28,7 @@ const VendorReportsPage = () => {
         vendorService.getPopularMenus(dateRange),
       ]);
       
-      // Extract data from response
+      // รองรับทั้ง 2 format: { data: {...} } และ {...}
       const salesData = sales.data || sales;
       const popularData = popular.data || popular;
       
@@ -36,7 +36,9 @@ const VendorReportsPage = () => {
       console.log('Popular data:', popularData);
       
       setSalesData(salesData);
-      setPopularMenus(popularData.popularMenus || []);
+      // รองรับทั้ง 2 format: { popularMenus: [...] } และ [...]
+      const menusArray = popularData.popularMenus || popularData || [];
+      setPopularMenus(Array.isArray(menusArray) ? menusArray : []);
     } catch (error) {
       console.error('Error fetching reports:', error);
       showNotification(error.response?.data?.error?.message || t('vendor.reports.loadError'), 'error');
