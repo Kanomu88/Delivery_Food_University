@@ -69,6 +69,62 @@ const AdminReportsPage = () => {
     showNotification('อัปเดตรายงานสำเร็จ', 'success');
   };
 
+  const handleApproveRequest = async (requestId) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/reports/requests/${requestId}/approve`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        showNotification('อนุมัติคำขอรายงานสำเร็จ', 'success');
+        fetchReportRequests();
+      } else {
+        throw new Error(data.error?.message || 'Failed to approve');
+      }
+    } catch (error) {
+      console.error('Error approving request:', error);
+      showNotification('ไม่สามารถอนุมัติคำขอได้', 'error');
+    }
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    if (!confirm('คุณแน่ใจหรือไม่ที่จะปฏิเสธคำขอนี้?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/reports/requests/${requestId}/reject`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        showNotification('ปฏิเสธคำขอรายงานสำเร็จ', 'success');
+        fetchReportRequests();
+      } else {
+        throw new Error(data.error?.message || 'Failed to reject');
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      showNotification('ไม่สามารถปฏิเสธคำขอได้', 'error');
+    }
+  };
+
   const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { label: 'รอดำเนินการ', className: 'status-pending' },
@@ -148,12 +204,20 @@ const AdminReportsPage = () => {
               </div>
               <div className="request-actions">
                 {request.status === 'pending' && (
-                  <button
-                    className="btn-generate"
-                    onClick={() => handleGenerateReport(request)}
-                  >
-                    📝 สร้างรายงาน
-                  </button>
+                  <>
+                    <button
+                      className="btn-approve"
+                      onClick={() => handleApproveRequest(request._id)}
+                    >
+                      ✅ อนุมัติ
+                    </button>
+                    <button
+                      className="btn-reject"
+                      onClick={() => handleRejectRequest(request._id)}
+                    >
+                      ❌ ปฏิเสธ
+                    </button>
+                  </>
                 )}
                 {request.status === 'completed' && (
                   <button

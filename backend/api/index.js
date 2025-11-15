@@ -825,6 +825,62 @@ app.get('/api/reports/requests', authenticate, async (req, res) => {
   }
 });
 
+// Report routes - Admin approve request
+app.put('/api/reports/requests/:requestId/approve', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const reportRequest = await ReportRequest.findByIdAndUpdate(
+      req.params.requestId,
+      {
+        status: 'completed',
+        processedBy: req.user.id,
+        processedAt: new Date(),
+      },
+      { new: true }
+    );
+
+    if (!reportRequest) {
+      return res.status(404).json({ success: false, error: { message: 'Report request not found' } });
+    }
+
+    res.json({ success: true, data: { reportRequest } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Report routes - Admin reject request
+app.put('/api/reports/requests/:requestId/reject', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const reportRequest = await ReportRequest.findByIdAndUpdate(
+      req.params.requestId,
+      {
+        status: 'rejected',
+        processedBy: req.user.id,
+        processedAt: new Date(),
+      },
+      { new: true }
+    );
+
+    if (!reportRequest) {
+      return res.status(404).json({ success: false, error: { message: 'Report request not found' } });
+    }
+
+    res.json({ success: true, data: { reportRequest } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
 // Report routes - Admin get vendors list
 app.get('/api/reports/vendors', authenticate, async (req, res) => {
   try {
