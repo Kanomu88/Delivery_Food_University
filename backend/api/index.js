@@ -526,6 +526,134 @@ app.get('/api/vendors/dashboard', authenticate, async (req, res) => {
   }
 });
 
+// Vendor reports - Sales report
+app.get('/api/vendors/reports/sales', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
+    }
+
+    const { startDate, endDate } = req.query;
+    
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user._id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Build query
+    const query = { vendor: req.user._id, paymentStatus: 'paid' };
+    
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    // Get orders
+    const orders = await Order.find(query);
+
+    // Calculate totals
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const totalOrders = orders.length;
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    // Group by date for daily sales
+    const dailySales = {};
+    orders.forEach(order => {
+      const date = order.createdAt.toISOString().split('T')[0];
+      if (!dailySales[date]) {
+        dailySales[date] = { date, revenue: 0, orders: 0 };
+      }
+      dailySales[date].revenue += order.totalAmount;
+      dailySales[date].orders += 1;
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalRevenue,
+        totalOrders,
+        averageOrderValue,
+        dailySales: Object.values(dailySales).sort((a, b) => new Date(a.date) - new Date(b.date))
+      }
+    });
+  } catch (error) {
+    console.error('Get sales report error:', error);
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Vendor reports - Popular menus
+app.get('/api/vendors/reports/popular-menus', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
+    }
+
+    const { startDate, endDate, limit = 10 } = req.query;
+
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user._id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Build match query
+    const matchQuery = { vendor: req.user._id, paymentStatus: 'paid' };
+    
+    if (startDate || endDate) {
+      matchQuery.createdAt = {};
+      if (startDate) matchQuery.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        matchQuery.createdAt.$lte = end;
+      }
+    }
+
+    // Get orders and aggregate menu data
+    const orders = await Order.find(matchQuery);
+    
+    // Calculate menu statistics
+    const menuStats = {};
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        const menuId = item.menu?.toString() || 'unknown';
+        if (!menuStats[menuId]) {
+          menuStats[menuId] = {
+            _id: menuId,
+            name: item.name,
+            totalQuantity: 0,
+            totalRevenue: 0
+          };
+        }
+        menuStats[menuId].totalQuantity += item.quantity;
+        menuStats[menuId].totalRevenue += item.price * item.quantity;
+      });
+    });
+
+    // Sort by quantity and limit
+    const popularMenus = Object.values(menuStats)
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+      .slice(0, parseInt(limit));
+
+    res.json({
+      success: true,
+      data: { popularMenus }
+    });
+  } catch (error) {
+    console.error('Get popular menus error:', error);
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
 // Canteen routes
 app.get('/api/canteens', async (req, res) => {
   try {
