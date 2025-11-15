@@ -536,27 +536,28 @@ app.get('/api/vendors/reports/sales', authenticate, async (req, res) => {
 
     const { startDate, endDate } = req.query;
     
-    // Find vendor profile
-    const vendor = await Vendor.findOne({ userId: req.user._id });
-    if (!vendor) {
-      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
-    }
+    // Get vendor's menus
+    const vendorMenus = await Menu.find({ vendor: req.user._id }).select('_id');
+    const menuIds = vendorMenus.map(m => m._id);
 
-    // Build query
-    const query = { vendor: req.user._id, paymentStatus: 'paid' };
+    // Build query - find orders that contain vendor's menu items
+    const matchQuery = { 
+      'items.menu': { $in: menuIds },
+      paymentStatus: 'paid'
+    };
     
     if (startDate || endDate) {
-      query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
+      matchQuery.createdAt = {};
+      if (startDate) matchQuery.createdAt.$gte = new Date(startDate);
       if (endDate) {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-        query.createdAt.$lte = end;
+        matchQuery.createdAt.$lte = end;
       }
     }
 
     // Get orders
-    const orders = await Order.find(query);
+    const orders = await Order.find(matchQuery);
 
     // Calculate totals
     const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
@@ -599,14 +600,15 @@ app.get('/api/vendors/reports/popular-menus', authenticate, async (req, res) => 
 
     const { startDate, endDate, limit = 10 } = req.query;
 
-    // Find vendor profile
-    const vendor = await Vendor.findOne({ userId: req.user._id });
-    if (!vendor) {
-      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
-    }
+    // Get vendor's menus
+    const vendorMenus = await Menu.find({ vendor: req.user._id }).select('_id');
+    const menuIds = vendorMenus.map(m => m._id);
 
-    // Build match query
-    const matchQuery = { vendor: req.user._id, paymentStatus: 'paid' };
+    // Build match query - find orders that contain vendor's menu items
+    const matchQuery = { 
+      'items.menu': { $in: menuIds },
+      paymentStatus: 'paid'
+    };
     
     if (startDate || endDate) {
       matchQuery.createdAt = {};
