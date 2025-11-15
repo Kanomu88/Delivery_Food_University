@@ -28,7 +28,7 @@ const AdminReportsPage = () => {
         `${import.meta.env.VITE_API_URL}/reports/requests${queryParams}`,
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           },
         }
       );
