@@ -514,9 +514,17 @@ app.get('/api/vendors/orders', authenticate, async (req, res) => {
       return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
     }
 
-    const vendorMenus = await Menu.find({ vendor: req.user._id }).select('_id');
+    // Find vendor profile
+    const vendor = await Vendor.findOne({ userId: req.user.id });
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor profile not found' } });
+    }
+
+    // Get vendor's menus
+    const vendorMenus = await Menu.find({ vendorId: vendor._id }).select('_id');
     const menuIds = vendorMenus.map(m => m._id);
 
+    // Find orders containing vendor's menus
     const orders = await Order.find({ 'items.menu': { $in: menuIds } })
       .populate('items.menu')
       .populate('user', 'name email phone')
