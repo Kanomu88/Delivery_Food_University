@@ -59,24 +59,14 @@ const VendorReportsPage = () => {
 
   const handleRequestReport = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/reports/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      const data = await response.json();
+      const data = await vendorService.requestReport();
 
       if (data.success) {
         showNotification('ส่งคำขอรายงานสำเร็จ แอดมินจะดำเนินการให้เร็วที่สุด', 'success');
-      } else {
-        throw new Error(data.error?.message || 'Failed to request report');
       }
     } catch (error) {
       console.error('Request report error:', error);
-      showNotification('ไม่สามารถส่งคำขอรายงานได้', 'error');
+      showNotification(error.response?.data?.error?.message || 'ไม่สามารถส่งคำขอรายงานได้', 'error');
     }
   };
 
@@ -148,7 +138,7 @@ const VendorReportsPage = () => {
                 {salesData.dailySales.map((day, index) => {
                   const maxRevenue = Math.max(...salesData.dailySales.map(d => d.revenue));
                   const height = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0;
-                  
+
                   return (
                     <div key={index} className="chart-bar-container">
                       <div className="chart-bar-wrapper">

@@ -35,4 +35,9 @@ export const vendorService = {
     const response = await api.get('/vendors/reports/popular-menus', { params });
     return response.data;
   },
+
+  requestReport: async () => {
+    const response = await api.post('/reports/request');
+    return response.data;
+  },
 };
