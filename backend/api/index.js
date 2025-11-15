@@ -223,7 +223,7 @@ app.get('/api/menus', async (req, res) => {
     
     const query = {};
     if (category) query.category = category;
-    if (available !== undefined) query.available = available === 'true';
+    if (available !== undefined) query.isAvailable = available === 'true';
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -232,7 +232,7 @@ app.get('/api/menus', async (req, res) => {
     }
 
     const menus = await Menu.find(query)
-      .populate('vendor', 'name email')
+      .populate('vendorId', 'name location')
       .sort({ createdAt: -1 })
       .limit(100);
 
@@ -360,63 +360,6 @@ app.get('/api/menus/:id', async (req, res) => {
     }
 
     res.json({ success: true, data: menu });
-  } catch (error) {
-    res.status(500).json({ success: false, error: { message: error.message } });
-  }
-});
-
-app.post('/api/menus', authenticate, async (req, res) => {
-  try {
-    await connectDB();
-    if (req.user.role !== 'vendor') {
-      return res.status(403).json({ success: false, error: { message: 'Only vendors can create menus' } });
-    }
-
-    const menu = await Menu.create({
-      ...req.body,
-      vendor: req.user._id
-    });
-
-    res.status(201).json({ success: true, data: menu });
-  } catch (error) {
-    res.status(500).json({ success: false, error: { message: error.message } });
-  }
-});
-
-app.put('/api/menus/:id', authenticate, async (req, res) => {
-  try {
-    await connectDB();
-    if (req.user.role !== 'vendor') {
-      return res.status(403).json({ success: false, error: { message: 'Only vendors can update menus' } });
-    }
-
-    const menu = await Menu.findOne({ _id: req.params.id, vendor: req.user._id });
-    if (!menu) {
-      return res.status(404).json({ success: false, error: { message: 'Menu not found' } });
-    }
-
-    Object.assign(menu, req.body);
-    await menu.save();
-
-    res.json({ success: true, data: menu });
-  } catch (error) {
-    res.status(500).json({ success: false, error: { message: error.message } });
-  }
-});
-
-app.delete('/api/menus/:id', authenticate, async (req, res) => {
-  try {
-    await connectDB();
-    if (req.user.role !== 'vendor') {
-      return res.status(403).json({ success: false, error: { message: 'Only vendors can delete menus' } });
-    }
-
-    const menu = await Menu.findOneAndDelete({ _id: req.params.id, vendor: req.user._id });
-    if (!menu) {
-      return res.status(404).json({ success: false, error: { message: 'Menu not found' } });
-    }
-
-    res.json({ success: true, message: 'Menu deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }
