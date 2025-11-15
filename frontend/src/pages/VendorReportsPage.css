@@ -21,7 +21,7 @@
 
 .request-report-btn {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
   color: white;
   border: none;
   border-radius: 8px;
@@ -29,15 +29,21 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .request-report-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, #66BB6A, #81C784);
+}
+
+.request-report-btn:active {
+  transform: translateY(0);
 }
 
 .date-filter {
