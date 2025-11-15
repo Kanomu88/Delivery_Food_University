@@ -16,7 +16,7 @@ import ScrollToTop from './components/common/ScrollToTop';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const MenuPage = lazy(() => import('./pages/MenuPage'));
+const MenuPage = lazy(() => import('./pages/NewMenuPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
 const OrderDetailPage = lazy(() => import('./pages/OrderDetailPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));

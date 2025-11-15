@@ -290,7 +290,10 @@
       "quantity": "จำนวนที่ขาย",
       "revenue": "รายได้",
       "noData": "ไม่มีข้อมูลยอดขายสำหรับช่วงเวลาที่เลือก",
-      "salesTrend": "แนวโน้มยอดขาย"
+      "salesTrend": "แนวโน้มยอดขาย",
+      "requestReport": "ขอรายงานจากแอดมิน",
+      "requestSuccess": "ส่งคำขอรายงานสำเร็จ",
+      "requestError": "ไม่สามารถส่งคำขอรายงานได้"
     }
   },
   "admin": {
@@ -389,7 +392,38 @@
       "revenue": "รายได้",
       "noData": "ไม่มีข้อมูลสำหรับช่วงเวลาที่เลือก",
       "dailyOrders": "ออเดอร์รายวัน",
-      "dailyRevenue": "รายได้รายวัน"
+      "dailyRevenue": "รายได้รายวัน",
+      "manageReports": "จัดการรายงาน",
+      "reportRequests": "คำขอรายงาน",
+      "generateReport": "สร้างรายงาน",
+      "editReport": "แก้ไขรายงาน",
+      "viewReport": "ดูรายงาน",
+      "exportPDF": "ส่งออก PDF",
+      "exportWord": "ส่งออก Word",
+      "pending": "รอดำเนินการ",
+      "processing": "กำลังดำเนินการ",
+      "completed": "เสร็จสิ้น",
+      "rejected": "ปฏิเสธ",
+      "requestedBy": "ขอโดย",
+      "requestDate": "วันที่ขอ",
+      "processedBy": "ดำเนินการโดย",
+      "noRequests": "ไม่มีคำขอรายงาน",
+      "selectVendor": "เลือกร้านค้า",
+      "vendorInfo": "ข้อมูลร้านค้า",
+      "period": "ช่วงเวลา",
+      "summary": "สรุปยอดขาย",
+      "topSellingItems": "เมนูขายดี",
+      "saveAndClose": "บันทึกและปิด",
+      "editMode": "โหมดแก้ไข",
+      "addMenuItem": "เพิ่มเมนู",
+      "removeMenuItem": "ลบเมนู",
+      "saveChanges": "บันทึกการแก้ไข",
+      "generateSuccess": "สร้างรายงานสำเร็จ",
+      "generateError": "ไม่สามารถสร้างรายงานได้",
+      "updateSuccess": "อัปเดตรายงานสำเร็จ",
+      "updateError": "ไม่สามารถอัปเดตรายงานได้",
+      "exportSuccess": "ส่งออกไฟล์สำเร็จ",
+      "exportError": "ไม่สามารถส่งออกไฟล์ได้"
     }
   }
 }

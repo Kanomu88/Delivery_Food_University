@@ -103,7 +103,23 @@ const PaymentPage = () => {
 
   if (isLoading) return <Loading />;
 
-  const order = orderData?.data?.order;
+  // Handle different API response structures
+  const order = orderData?.data?.order || orderData?.data;
+  
+  console.log('Order Data:', orderData);
+  console.log('Order:', order);
+
+  if (!order) {
+    return (
+      <div className="payment-page">
+        <div className="container">
+          <div className="error-message">
+            ไม่พบข้อมูลคำสั่งซื้อ กรุณาลองใหม่อีกครั้ง
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="payment-page">
@@ -112,18 +128,82 @@ const PaymentPage = () => {
 
         <div className="payment-content">
           <div className="order-info">
-            <h2>ข้อมูลคำสั่งซื้อ</h2>
+            <h2>📋 ข้อมูลคำสั่งซื้อ</h2>
+            
             <div className="info-row">
-              <span className="info-label">หมายเลขคำสั่งซื้อ:</span>
-              <span className="info-value">#{order?._id?.slice(-6)}</span>
+              <span className="info-label">🔢 หมายเลขคำสั่งซื้อ:</span>
+              <span className="info-value order-id">
+                #{order._id ? order._id.slice(-8) : orderId.slice(-8)}
+              </span>
             </div>
+            
             <div className="info-row">
-              <span className="info-label">จำนวนรายการ:</span>
-              <span className="info-value">{order?.items?.length} รายการ</span>
+              <span className="info-label">📅 วันที่สั่ง:</span>
+              <span className="info-value">
+                {order?.createdAt ? new Date(order.createdAt).toLocaleString('th-TH', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }) : '-'}
+              </span>
             </div>
+            
+            <div className="info-row">
+              <span className="info-label">🕐 เวลารับอาหาร:</span>
+              <span className="info-value">
+                {order?.pickupTime ? new Date(order.pickupTime).toLocaleString('th-TH', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }) : '-'}
+              </span>
+            </div>
+            
+            <div className="info-row">
+              <span className="info-label">📊 สถานะ:</span>
+              <span className={`info-value status-badge status-${order?.status}`}>
+                {order?.status === 'pending' && '⏳ รอชำระเงิน'}
+                {order?.status === 'confirmed' && '✅ ยืนยันแล้ว'}
+                {order?.status === 'preparing' && '👨‍🍳 กำลังเตรียม'}
+                {order?.status === 'ready' && '✅ พร้อมรับ'}
+                {order?.status === 'completed' && '🎉 เสร็จสิ้น'}
+                {order?.status === 'cancelled' && '❌ ยกเลิก'}
+              </span>
+            </div>
+            
+            <div className="order-items-section">
+              <h3>🍽️ รายการอาหาร:</h3>
+              {order.items && order.items.length > 0 ? (
+                order.items.map((item, index) => (
+                  <div key={index} className="order-item-row">
+                    <span className="item-name">{item.name || item.menu?.name || 'ไม่ระบุ'}</span>
+                    <span className="item-quantity">x{item.quantity || 1}</span>
+                    <span className="item-price">
+                      ฿{((item.price || 0) * (item.quantity || 1)).toFixed(2)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-items">ไม่มีรายการอาหาร</p>
+              )}
+            </div>
+            
+            {order?.specialRequests && (
+              <div className="info-row special-requests-row">
+                <span className="info-label">📝 คำขอพิเศษ:</span>
+                <span className="info-value">{order.specialRequests}</span>
+              </div>
+            )}
+            
             <div className="info-row total-row">
-              <span className="info-label">ยอดชำระ:</span>
-              <span className="info-value amount">฿{order?.totalAmount?.toFixed(2)}</span>
+              <span className="info-label">💰 ยอดชำระทั้งหมด:</span>
+              <span className="info-value amount">
+                ฿{(order.totalAmount || 0).toFixed(2)}
+              </span>
             </div>
           </div>
 
@@ -220,7 +300,7 @@ const PaymentPage = () => {
                   <h2>สแกน QR Code เพื่อชำระเงิน</h2>
                   <img src={paymentData.qrCode} alt="QR Code" className="qr-code" />
                   <p>รหัสธุรกรรม: {paymentData.transactionId}</p>
-                  <p className="payment-amount">ยอดชำระ: ฿{order?.totalAmount?.toFixed(2)}</p>
+                  <p className="payment-amount">ยอดชำระ: ฿{(order.totalAmount || 0).toFixed(2)}</p>
                   <button 
                     onClick={handleConfirmPayment}
                     className="btn btn-primary btn-block"
@@ -249,7 +329,7 @@ const PaymentPage = () => {
                         <input type="text" placeholder="123" className="form-control" />
                       </div>
                     </div>
-                    <p className="payment-amount">ยอดชำระ: ฿{order?.totalAmount?.toFixed(2)}</p>
+                    <p className="payment-amount">ยอดชำระ: ฿{(order.totalAmount || 0).toFixed(2)}</p>
                     <button 
                       onClick={handleConfirmPayment}
                       className="btn btn-primary btn-block"

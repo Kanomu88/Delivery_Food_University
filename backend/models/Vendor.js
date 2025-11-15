@@ -7,6 +7,11 @@ const vendorSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  canteenId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Canteen',
+    required: false,
+  },
   shopName: {
     type: String,
     required: [true, 'Shop name is required'],
@@ -64,6 +69,7 @@ const vendorSchema = new mongoose.Schema({
 
 // Indexes
 vendorSchema.index({ userId: 1 });
+vendorSchema.index({ canteenId: 1 });
 vendorSchema.index({ status: 1 });
 vendorSchema.index({ isAcceptingOrders: 1 });
 

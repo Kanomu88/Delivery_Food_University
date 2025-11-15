@@ -22,21 +22,170 @@
 }
 
 .order-info {
-  background: var(--off-white);
-  padding: 1.5rem;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  padding: 2rem;
+  border-radius: 16px;
   margin-bottom: 2rem;
+  border: 2px solid #BAE6FD;
+  box-shadow: 0 4px 12px rgba(91, 154, 160, 0.1);
 }
 
 .order-info h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: var(--primary-blue);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #5B9AA0;
+  font-weight: 700;
+  border-bottom: 2px solid #BAE6FD;
+  padding-bottom: 0.75rem;
 }
 
-.order-info p {
-  margin: 0.5rem 0;
-  font-size: 1rem;
+.order-info h3 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 1rem 0;
+  color: #0C4A6E;
+  font-weight: 600;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #E0F2FE;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #0C4A6E;
+  font-size: 0.95rem;
+}
+
+.info-value {
+  font-weight: 500;
+  color: #374151;
+  text-align: right;
+}
+
+.info-value.order-id {
+  font-family: monospace;
+  background: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #5B9AA0;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.status-pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.status-confirmed,
+.status-preparing {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-ready,
+.status-completed {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.status-cancelled {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.order-items-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #E0F2FE;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #F0F9FF;
+}
+
+.order-item-row:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  flex: 1;
+  font-weight: 500;
+  color: #374151;
+}
+
+.item-quantity {
+  margin: 0 1rem;
+  padding: 0.25rem 0.75rem;
+  background: #F0F9FF;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #5B9AA0;
+  font-size: 0.875rem;
+}
+
+.item-price {
+  font-weight: 700;
+  color: #5B9AA0;
+  min-width: 80px;
+  text-align: right;
+}
+
+.special-requests-row {
+  background: #FEF3C7;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border-left: 4px solid #F59E0B;
+}
+
+.special-requests-row .info-label {
+  color: #92400E;
+}
+
+.special-requests-row .info-value {
+  color: #78350F;
+  font-weight: 600;
+}
+
+.total-row {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 3px solid #5B9AA0 !important;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.total-row .info-label {
+  font-size: 1.1rem;
+  color: #5B9AA0;
+}
+
+.total-row .amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #5B9AA0;
 }
 
 .payment-methods h2 {

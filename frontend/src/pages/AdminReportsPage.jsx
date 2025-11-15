@@ -1,54 +1,84 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { adminService } from '../services/adminService';
 import { useNotification } from '../contexts/NotificationContext';
 import Loading from '../components/common/Loading';
+import ReportGeneratorModal from '../components/admin/ReportGeneratorModal';
+import ReportEditorModal from '../components/admin/ReportEditorModal';
 import './AdminReportsPage.css';
 
 const AdminReportsPage = () => {
   const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
-  const [reportData, setReportData] = useState(null);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [reportRequests, setReportRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [showGeneratorModal, setShowGeneratorModal] = useState(false);
+  const [showEditorModal, setShowEditorModal] = useState(false);
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    // Set default date range (last 30 days)
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    
-    setStartDate(start.toISOString().split('T')[0]);
-    setEndDate(end.toISOString().split('T')[0]);
-    
-    fetchReports(start.toISOString().split('T')[0], end.toISOString().split('T')[0]);
-  }, []);
+    fetchReportRequests();
+  }, [filter]);
 
-  const fetchReports = async (start, end) => {
+  const fetchReportRequests = async () => {
     try {
       setLoading(true);
-      // Use dashboard stats instead of reports endpoint
-      const response = await adminService.getDashboardStats();
-      console.log('Reports data:', response);
-      setReportData(response.data || {});
+      const queryParams = filter !== 'all' ? `?status=${filter}` : '';
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reports/requests${queryParams}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        setReportRequests(data.data.reportRequests);
+      }
     } catch (error) {
-      console.error('Reports error:', error);
-      showNotification('ไม่สามารถโหลดรายงานได้', 'error');
-      setReportData({});
+      console.error('Error fetching report requests:', error);
+      showNotification('ไม่สามารถโหลดคำขอรายงานได้', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApplyFilter = () => {
-    if (startDate && endDate) {
-      if (new Date(startDate) > new Date(endDate)) {
-        showNotification('Start date must be before end date', 'error');
-        return;
-      }
-      fetchReports(startDate, endDate);
-    }
+  const handleGenerateReport = (request) => {
+    setSelectedRequest(request);
+    setShowGeneratorModal(true);
+  };
+
+  const handleEditReport = (request) => {
+    setSelectedRequest(request);
+    setShowEditorModal(true);
+  };
+
+  const handleReportGenerated = () => {
+    setShowGeneratorModal(false);
+    setSelectedRequest(null);
+    fetchReportRequests();
+    showNotification('สร้างรายงานสำเร็จ', 'success');
+  };
+
+  const handleReportUpdated = () => {
+    setShowEditorModal(false);
+    setSelectedRequest(null);
+    fetchReportRequests();
+    showNotification('อัปเดตรายงานสำเร็จ', 'success');
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      pending: { label: 'รอดำเนินการ', className: 'status-pending' },
+      processing: { label: 'กำลังดำเนินการ', className: 'status-processing' },
+      completed: { label: 'เสร็จสิ้น', className: 'status-completed' },
+      rejected: { label: 'ปฏิเสธ', className: 'status-rejected' },
+    };
+
+    const config = statusConfig[status] || statusConfig.pending;
+    return <span className={`status-badge ${config.className}`}>{config.label}</span>;
   };
 
   if (loading) {
@@ -57,174 +87,109 @@ const AdminReportsPage = () => {
 
   return (
     <div className="admin-reports-page">
-      <div className="page-header">
-        <h1>{t('admin.reports.title')}</h1>
+      <div className="reports-header">
+        <h1>📊 จัดการรายงาน</h1>
       </div>
 
-      <div className="date-filter-section">
-        <div className="date-filter-group">
-          <div className="date-input-group">
-            <label>{t('admin.reports.startDate')}</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="date-input"
-            />
-          </div>
-          <div className="date-input-group">
-            <label>{t('admin.reports.endDate')}</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="date-input"
-            />
-          </div>
-          <button onClick={handleApplyFilter} className="apply-btn">
-            {t('admin.reports.apply')}
-          </button>
-        </div>
+      <div className="filter-tabs">
+        <button
+          className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          ทั้งหมด ({reportRequests.length})
+        </button>
+        <button
+          className={`filter-tab ${filter === 'pending' ? 'active' : ''}`}
+          onClick={() => setFilter('pending')}
+        >
+          รอดำเนินการ
+        </button>
+        <button
+          className={`filter-tab ${filter === 'completed' ? 'active' : ''}`}
+          onClick={() => setFilter('completed')}
+        >
+          เสร็จสิ้น
+        </button>
       </div>
 
-      <div className="reports-content">
-        <section className="overview-section">
-          <h2>{t('admin.reports.systemOverview')}</h2>
-          <div className="overview-stats">
-            <div className="stat-card">
-              <div className="stat-icon">👥</div>
-              <div className="stat-content">
-                <h3>{reportData?.users?.total || 0}</h3>
-                <p>{t('admin.reports.totalUsers')}</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">🏪</div>
-              <div className="stat-content">
-                <h3>{reportData?.vendors?.total || 0}</h3>
-                <p>{t('admin.reports.totalVendors')}</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📦</div>
-              <div className="stat-content">
-                <h3>{reportData?.orders?.total || 0}</h3>
-                <p>{t('admin.reports.totalOrders')}</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">💰</div>
-              <div className="stat-content">
-                <h3>฿{reportData?.revenue?.total?.toLocaleString() || 0}</h3>
-                <p>{t('admin.reports.totalRevenue')}</p>
-              </div>
-            </div>
+      <div className="requests-list">
+        {reportRequests.length === 0 ? (
+          <div className="no-requests">
+            <p>ไม่มีคำขอรายงาน</p>
           </div>
-        </section>
-
-        {reportData?.topVendors && reportData.topVendors.length > 0 && (
-          <section className="vendor-stats-section">
-            <h2>{t('admin.reports.ordersByVendor')}</h2>
-            <div className="vendor-stats-table-container">
-              <table className="vendor-stats-table">
-                <thead>
-                  <tr>
-                    <th>{t('admin.reports.vendorName')}</th>
-                    <th>{t('admin.reports.orders')}</th>
-                    <th>{t('admin.reports.revenue')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.topVendors.map((vendor, index) => (
-                    <tr key={index}>
-                      <td>
-                        <strong>{vendor.vendorName || '-'}</strong>
-                      </td>
-                      <td>{vendor.totalOrders || 0}</td>
-                      <td>฿{vendor.totalRevenue?.toLocaleString() || 0}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-
-        {reportData?.dailyStats && reportData.dailyStats.length > 0 && (
-          <section className="daily-stats-section">
-            <h2>{t('admin.reports.dailyOrders')}</h2>
-            <div className="chart-container">
-              <div className="bar-chart">
-                {reportData.dailyStats.map((day, index) => {
-                  const maxOrders = Math.max(...reportData.dailyStats.map(d => d.orders || 0));
-                  const height = maxOrders > 0 ? (day.orders / maxOrders) * 100 : 0;
-                  
-                  return (
-                    <div key={index} className="bar-item">
-                      <div className="bar-wrapper">
-                        <div 
-                          className="bar" 
-                          style={{ height: `${height}%` }}
-                          title={`${day.orders} orders`}
-                        >
-                          <span className="bar-value">{day.orders}</span>
-                        </div>
-                      </div>
-                      <div className="bar-label">
-                        {new Date(day.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
+        ) : (
+          reportRequests.map((request) => (
+            <div key={request._id} className="request-card">
+              <div className="request-info">
+                <div className="request-vendor">
+                  <h3>🏪 {request.vendorId?.name || 'ไม่ระบุร้านค้า'}</h3>
+                  {getStatusBadge(request.status)}
+                </div>
+                <div className="request-details">
+                  <p>
+                    <strong>ขอโดย:</strong> {request.requestedBy?.name || 'ไม่ระบุ'}
+                  </p>
+                  <p>
+                    <strong>วันที่ขอ:</strong>{' '}
+                    {new Date(request.createdAt).toLocaleDateString('th-TH', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                  {request.processedBy && (
+                    <p>
+                      <strong>ดำเนินการโดย:</strong> {request.processedBy.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="request-actions">
+                {request.status === 'pending' && (
+                  <button
+                    className="btn-generate"
+                    onClick={() => handleGenerateReport(request)}
+                  >
+                    📝 สร้างรายงาน
+                  </button>
+                )}
+                {request.status === 'completed' && (
+                  <button
+                    className="btn-edit"
+                    onClick={() => handleEditReport(request)}
+                  >
+                    ✏️ แก้ไข/ดูรายงาน
+                  </button>
+                )}
               </div>
             </div>
-          </section>
-        )}
-
-        {reportData?.dailyStats && reportData.dailyStats.length > 0 && (
-          <section className="daily-revenue-section">
-            <h2>{t('admin.reports.dailyRevenue')}</h2>
-            <div className="chart-container">
-              <div className="bar-chart">
-                {reportData.dailyStats.map((day, index) => {
-                  const maxRevenue = Math.max(...reportData.dailyStats.map(d => d.revenue || 0));
-                  const height = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0;
-                  
-                  return (
-                    <div key={index} className="bar-item">
-                      <div className="bar-wrapper">
-                        <div 
-                          className="bar bar-revenue" 
-                          style={{ height: `${height}%` }}
-                          title={`฿${day.revenue?.toLocaleString()}`}
-                        >
-                          <span className="bar-value">฿{day.revenue?.toLocaleString()}</span>
-                        </div>
-                      </div>
-                      <div className="bar-label">
-                        {new Date(day.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {(!reportData?.topVendors || reportData.topVendors.length === 0) &&
-         (!reportData?.dailyStats || reportData.dailyStats.length === 0) && (
-          <div className="no-data">
-            <p>{t('admin.reports.noData')}</p>
-          </div>
+          ))
         )}
       </div>
+
+      {showGeneratorModal && (
+        <ReportGeneratorModal
+          request={selectedRequest}
+          onClose={() => {
+            setShowGeneratorModal(false);
+            setSelectedRequest(null);
+          }}
+          onSuccess={handleReportGenerated}
+        />
+      )}
+
+      {showEditorModal && (
+        <ReportEditorModal
+          request={selectedRequest}
+          onClose={() => {
+            setShowEditorModal(false);
+            setSelectedRequest(null);
+          }}
+          onSuccess={handleReportUpdated}
+        />
+      )}
     </div>
   );
 };

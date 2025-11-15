@@ -18,6 +18,7 @@ import vendorRoutes from './routes/vendorRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,6 +64,7 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Socket.io connection handling with JWT authentication
 io.use((socket, next) => {

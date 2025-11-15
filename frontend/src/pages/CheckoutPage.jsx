@@ -93,9 +93,17 @@ const CheckoutPage = () => {
           <div className="order-summary">
             <h2>{t('checkout.orderSummary')}</h2>
             {items.map((item) => (
-              <div key={item._id} className="summary-item">
-                <span>{item.name} × {item.quantity}</span>
-                <span>฿{(item.price * item.quantity).toFixed(2)}</span>
+              <div key={item._id} className="summary-item-wrapper">
+                <div className="summary-item">
+                  <span>{item.name} × {item.quantity}</span>
+                  <span>฿{(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+                {item.specialRequests && (
+                  <div className="item-special-requests">
+                    <span className="special-icon">⭐</span>
+                    <span className="special-text">{item.specialRequests}</span>
+                  </div>
+                )}
               </div>
             ))}
             <div className="summary-total">

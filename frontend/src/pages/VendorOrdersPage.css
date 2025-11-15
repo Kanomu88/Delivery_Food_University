@@ -110,16 +110,63 @@
 
 .order-card.new-order {
   border-color: #f59e0b;
-  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
-  animation: pulse 2s infinite;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+  animation: bounceIn 0.6s ease-out, glowPulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
+.order-card.new-order::before {
+  content: '🆕 ใหม่';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-100px);
   }
   50% {
-    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
+    opacity: 1;
+    transform: scale(1.05) translateY(0);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-5deg);
+  }
+  75% {
+    transform: translateX(5px) rotate(5deg);
   }
 }
 

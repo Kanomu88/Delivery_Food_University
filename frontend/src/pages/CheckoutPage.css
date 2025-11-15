@@ -43,11 +43,19 @@
   border-bottom: 2px solid var(--border-color);
 }
 
+.summary-item-wrapper {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+}
+
+.summary-item-wrapper:last-of-type {
+  border-bottom: none;
+}
+
 .summary-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
 }
@@ -70,6 +78,29 @@
   color: var(--primary-color);
   font-weight: 600;
   font-size: 1.1rem;
+}
+
+/* Item Special Requests */
+.item-special-requests {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border-radius: 8px;
+  border-left: 3px solid #5B9AA0;
+}
+
+.special-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.special-text {
+  font-size: 0.875rem;
+  color: #0C4A6E;
+  font-weight: 600;
 }
 
 .summary-total {

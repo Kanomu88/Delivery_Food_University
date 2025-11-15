@@ -17,63 +17,107 @@ const VendorOrdersPage = () => {
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
   const [newOrderIds, setNewOrderIds] = useState(new Set());
   const socketRef = useRef(null);
+  const audioContextRef = useRef(null);
 
   useEffect(() => {
     fetchOrders();
     
-    // Initialize Socket.io connection
-    const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
-      transports: ['websocket', 'polling'],
-    });
+    // Socket.io is disabled on Vercel (serverless doesn't support WebSocket)
+    // Real-time notifications are not available in production
+    // Orders will need manual refresh
     
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      console.log('Socket connected');
-      if (user?._id) {
-        socket.emit('join', user._id);
-      }
-    });
-
-    // Listen for new orders
-    socket.on('order:new', (order) => {
-      console.log('New order received:', order);
-      setOrders(prevOrders => {
-        // Check if order already exists
-        const exists = prevOrders.some(o => o._id === order._id);
-        if (!exists) {
-          // Add to new orders set for animation
-          setNewOrderIds(prev => new Set(prev).add(order._id));
-          // Remove from new orders after 5 seconds
-          setTimeout(() => {
-            setNewOrderIds(prev => {
-              const newSet = new Set(prev);
-              newSet.delete(order._id);
-              return newSet;
-            });
-          }, 5000);
-          return [order, ...prevOrders];
-        }
-        return prevOrders;
+    if (import.meta.env.DEV) {
+      // Only enable Socket.io in development
+      const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const socket = io(baseUrl, {
+        transports: ['polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
       });
-      showNotification(t('vendor.orders.newOrderReceived') || 'New order received!', 'info');
-    });
+      
+      socketRef.current = socket;
 
-    // Listen for order cancellations
-    socket.on('order:cancelled', (data) => {
-      console.log('Order cancelled:', data);
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order._id === data.orderId ? { ...order, status: 'cancelled' } : order
-        )
-      );
-      showNotification(t('vendor.orders.orderCancelled') || 'Order cancelled', 'warning');
-    });
+      socket.on('connect', () => {
+        console.log('Socket connected');
+        if (user?._id) {
+          socket.emit('join', user._id);
+        }
+      });
+
+      // Listen for new orders
+      socket.on('order:new', (order) => {
+        console.log('New order received:', order);
+        setOrders(prevOrders => {
+          // Check if order already exists
+          const exists = prevOrders.some(o => o._id === order._id);
+          if (!exists) {
+            // Play notification sound
+            playNotificationSound();
+            
+            // Add to new orders set for animation
+            setNewOrderIds(prev => new Set(prev).add(order._id));
+            // Remove from new orders after 8 seconds
+            setTimeout(() => {
+              setNewOrderIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(order._id);
+                return newSet;
+              });
+            }, 8000);
+            return [order, ...prevOrders];
+          }
+          return prevOrders;
+        });
+        showNotification(t('vendor.orders.newOrderReceived') || 'มีคำสั่งซื้อใหม่เข้ามา! 🎉', 'success');
+      });
+
+      // Listen for order cancellations
+      socket.on('order:cancelled', (data) => {
+        console.log('Order cancelled:', data);
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order._id === data.orderId ? { ...order, status: 'cancelled' } : order
+          )
+        );
+        showNotification(t('vendor.orders.orderCancelled') || 'Order cancelled', 'warning');
+      });
+    }
 
     return () => {
-      socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
   }, [filter, user]);
+
+  const playNotificationSound = () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      const audioContext = audioContextRef.current;
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Create a pleasant notification sound (two tones)
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -204,6 +248,11 @@ const VendorOrdersPage = () => {
                   <span className="icon">👤</span>
                   <span className="label">ลูกค้า:</span>
                   <span className="value">{order.user?.name || 'ไม่ระบุ'}</span>
+                </div>
+                <div className="info-row">
+                  <span className="icon">📅</span>
+                  <span className="label">สั่งเมื่อ:</span>
+                  <span className="value">{order.createdAt ? formatPickupTime(order.createdAt) : 'ไม่ระบุ'}</span>
                 </div>
                 <div className="info-row">
                   <span className="icon">🕐</span>

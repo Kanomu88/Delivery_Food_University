@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
 import Notification from '../common/Notification';
+import VendorNotificationBell from '../common/VendorNotificationBell';
 import Cart from '../cart/Cart';
 import './Header.css';
 
@@ -38,8 +39,8 @@ const Header = () => {
           {user && user.role === 'customer' && (
             <>
               <Link to="/orders" onClick={closeMobileMenu}>{t('nav.orders')}</Link>
-              <button 
-                className="cart-button" 
+              <button
+                className="cart-button"
                 onClick={() => {
                   setIsCartOpen(true);
                   closeMobileMenu();
@@ -57,6 +58,7 @@ const Header = () => {
               <Link to="/vendor/dashboard" onClick={closeMobileMenu}>{t('nav.dashboard')}</Link>
               <Link to="/vendor/orders" onClick={closeMobileMenu}>{t('nav.orders')}</Link>
               <Link to="/vendor/menu" onClick={closeMobileMenu}>{t('nav.menuManagement')}</Link>
+              <VendorNotificationBell />
             </>
           )}
           {user && user.role === 'admin' && (
@@ -66,8 +68,8 @@ const Header = () => {
 
         <div className="header-actions">
           {/* Mobile Menu Toggle */}
-          <button 
-            className="mobile-menu-toggle" 
+          <button
+            className="mobile-menu-toggle"
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
           >
@@ -96,8 +98,8 @@ const Header = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
-          className="mobile-menu-overlay" 
+        <div
+          className="mobile-menu-overlay"
           onClick={closeMobileMenu}
         />
       )}

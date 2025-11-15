@@ -57,10 +57,36 @@ const VendorReportsPage = () => {
     return <Loading />;
   }
 
+  const handleRequestReport = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reports/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showNotification('ส่งคำขอรายงานสำเร็จ แอดมินจะดำเนินการให้เร็วที่สุด', 'success');
+      } else {
+        throw new Error(data.error?.message || 'Failed to request report');
+      }
+    } catch (error) {
+      console.error('Request report error:', error);
+      showNotification('ไม่สามารถส่งคำขอรายงานได้', 'error');
+    }
+  };
+
   return (
     <div className="vendor-reports-page">
       <div className="reports-header">
         <h1>{t('vendor.reports.title')}</h1>
+        <button className="request-report-btn" onClick={handleRequestReport}>
+          📊 ขอรายงานจากแอดมิน
+        </button>
       </div>
 
       <div className="date-filter">

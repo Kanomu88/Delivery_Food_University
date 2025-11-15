@@ -83,9 +83,34 @@ const orderSchema = new mongoose.Schema({
   notes: String,
 }, { timestamps: true });
 
+const canteenSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  nameEn: String,
+  description: String,
+  descriptionEn: String,
+  image: String,
+  location: String,
+  building: String,
+  floor: String,
+  isActive: { type: Boolean, default: true },
+  order: { type: Number, default: 0 },
+}, { timestamps: true });
+
+const vendorSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  canteenId: { type: mongoose.Schema.Types.ObjectId, ref: 'Canteen' },
+  shopName: { type: String, required: true },
+  description: String,
+  logo: String,
+  status: { type: String, enum: ['pending', 'approved', 'suspended'], default: 'pending' },
+  isAcceptingOrders: { type: Boolean, default: true },
+}, { timestamps: true });
+
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 const Menu = mongoose.models.Menu || mongoose.model('Menu', menuSchema);
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
+const Canteen = mongoose.models.Canteen || mongoose.model('Canteen', canteenSchema);
+const Vendor = mongoose.models.Vendor || mongoose.model('Vendor', vendorSchema);
 
 // Auth middleware
 const authenticate = async (req, res, next) => {
@@ -496,6 +521,60 @@ app.get('/api/vendors/dashboard', authenticate, async (req, res) => {
         recentOrders: orders.slice(0, 5)
       }
     });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Canteen routes
+app.get('/api/canteens', async (req, res) => {
+  try {
+    await connectDB();
+    const canteens = await Canteen.find({ isActive: true }).sort({ order: 1, name: 1 });
+    res.json({ success: true, data: canteens });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/canteens/:id', async (req, res) => {
+  try {
+    await connectDB();
+    const canteen = await Canteen.findById(req.params.id);
+    if (!canteen) {
+      return res.status(404).json({ success: false, error: { message: 'Canteen not found' } });
+    }
+    res.json({ success: true, data: canteen });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/canteens/:id/vendors', async (req, res) => {
+  try {
+    await connectDB();
+    const vendors = await Vendor.find({ canteenId: req.params.id, status: 'approved' })
+      .populate('userId', 'name email')
+      .sort({ shopName: 1 });
+    res.json({ success: true, data: vendors });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/vendors/:id/menus', async (req, res) => {
+  try {
+    await connectDB();
+    const vendor = await Vendor.findById(req.params.id);
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor not found' } });
+    }
+    
+    const menus = await Menu.find({ vendor: vendor.userId, available: true })
+      .populate('vendor', 'name email')
+      .sort({ name: 1 });
+    
+    res.json({ success: true, data: menus, vendor });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }
