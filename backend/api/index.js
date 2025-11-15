@@ -702,7 +702,14 @@ app.get('/api/vendors/reports/popular-menus', authenticate, async (req, res) => 
 app.get('/api/canteens', async (req, res) => {
   try {
     await connectDB();
-    const canteens = await Canteen.find({ isActive: true }).sort({ order: 1, name: 1 });
+    // Get unique locations from vendors
+    const vendors = await Vendor.find({ isActive: true }).distinct('location');
+    const canteens = vendors.filter(loc => loc).map((location, index) => ({
+      _id: location,
+      name: location,
+      order: index + 1,
+      isActive: true
+    }));
     res.json({ success: true, data: canteens });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
@@ -712,11 +719,12 @@ app.get('/api/canteens', async (req, res) => {
 app.get('/api/canteens/:id', async (req, res) => {
   try {
     await connectDB();
-    const canteen = await Canteen.findById(req.params.id);
-    if (!canteen) {
+    const location = decodeURIComponent(req.params.id);
+    const vendors = await Vendor.find({ location, isActive: true });
+    if (vendors.length === 0) {
       return res.status(404).json({ success: false, error: { message: 'Canteen not found' } });
     }
-    res.json({ success: true, data: canteen });
+    res.json({ success: true, data: { _id: location, name: location, isActive: true } });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }
@@ -725,9 +733,10 @@ app.get('/api/canteens/:id', async (req, res) => {
 app.get('/api/canteens/:id/vendors', async (req, res) => {
   try {
     await connectDB();
-    const vendors = await Vendor.find({ canteenId: req.params.id, status: 'approved' })
+    const location = decodeURIComponent(req.params.id);
+    const vendors = await Vendor.find({ location, isActive: true })
       .populate('userId', 'name email')
-      .sort({ shopName: 1 });
+      .sort({ name: 1 });
     res.json({ success: true, data: vendors });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
@@ -742,8 +751,7 @@ app.get('/api/vendors/:id/menus', async (req, res) => {
       return res.status(404).json({ success: false, error: { message: 'Vendor not found' } });
     }
     
-    const menus = await Menu.find({ vendor: vendor.userId, available: true })
-      .populate('vendor', 'name email')
+    const menus = await Menu.find({ vendorId: vendor._id, isAvailable: true })
       .sort({ name: 1 });
     
     res.json({ success: true, data: menus, vendor });
