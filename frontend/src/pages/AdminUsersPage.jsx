@@ -29,7 +29,10 @@ const AdminUsersPage = () => {
       if (statusFilter !== 'all') params.status = statusFilter;
       
       const response = await adminService.getAllUsers(params);
-      setUsers(response.data?.users || []);
+      
+      // รองรับทั้ง 2 format: { data: { users: [...] } } และ { data: [...] }
+      const usersData = response.data?.users || response.data || [];
+      setUsers(Array.isArray(usersData) ? usersData : []);
     } catch (error) {
       showNotification(t('admin.users.loadError'), 'error');
     } finally {

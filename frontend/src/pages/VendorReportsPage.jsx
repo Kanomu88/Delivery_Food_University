@@ -27,8 +27,16 @@ const VendorReportsPage = () => {
         vendorService.getSalesReport(dateRange),
         vendorService.getPopularMenus(dateRange),
       ]);
-      setSalesData(sales);
-      setPopularMenus(popular.popularMenus || []);
+      
+      // Extract data from response
+      const salesData = sales.data || sales;
+      const popularData = popular.data || popular;
+      
+      console.log('Sales data:', salesData);
+      console.log('Popular data:', popularData);
+      
+      setSalesData(salesData);
+      setPopularMenus(popularData.popularMenus || []);
     } catch (error) {
       console.error('Error fetching reports:', error);
       showNotification(error.response?.data?.error?.message || t('vendor.reports.loadError'), 'error');

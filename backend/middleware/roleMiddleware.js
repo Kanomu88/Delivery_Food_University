@@ -1,3 +1,4 @@
+// Role-based authorization middleware
 export const authorize = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {

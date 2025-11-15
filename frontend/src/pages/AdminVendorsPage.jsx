@@ -29,7 +29,10 @@ const AdminVendorsPage = () => {
       if (statusFilter !== 'all') params.status = statusFilter;
       
       const response = await adminService.getAllVendors(params);
-      setVendors(response.data?.vendors || []);
+      
+      // รองรับทั้ง 2 format: { data: { vendors: [...] } } และ { data: [...] }
+      const vendorsData = response.data?.vendors || response.data || [];
+      setVendors(Array.isArray(vendorsData) ? vendorsData : []);
     } catch (error) {
       showNotification(t('admin.vendors.loadError'), 'error');
     } finally {
@@ -52,7 +55,7 @@ const AdminVendorsPage = () => {
         await adminService.suspendVendor(selectedVendor._id);
         showNotification(t('admin.vendors.suspendSuccess'), 'success');
       } else if (actionType === 'unsuspend') {
-        await adminService.suspendVendor(selectedVendor._id);
+        await adminService.unsuspendVendor(selectedVendor._id);
         showNotification(t('admin.vendors.unsuspendSuccess'), 'success');
       }
       setShowActionModal(false);

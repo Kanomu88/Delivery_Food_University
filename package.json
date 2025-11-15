@@ -22,5 +22,8 @@
     "browserslist": "^4.27.0",
     "caniuse-lite": "^1.0.30001754",
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
   }
 }

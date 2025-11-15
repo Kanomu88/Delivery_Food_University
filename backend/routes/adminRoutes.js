@@ -5,6 +5,7 @@ import {
   getAllVendors,
   approveVendor,
   suspendVendor,
+  unsuspendVendor,
   getAllOrders,
   getSystemReports,
 } from '../controllers/adminController.js';
@@ -24,6 +25,7 @@ router.put('/users/:id/ban', toggleUserBan);
 router.get('/vendors', getAllVendors);
 router.put('/vendors/:id/approve', approveVendor);
 router.put('/vendors/:id/suspend', suspendVendor);
+router.put('/vendors/:id/unsuspend', unsuspendVendor);
 
 // Order management
 router.get('/orders', getAllOrders);

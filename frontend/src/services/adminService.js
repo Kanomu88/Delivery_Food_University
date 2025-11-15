@@ -33,6 +33,11 @@ export const adminService = {
     return response.data;
   },
 
+  unsuspendVendor: async (vendorId) => {
+    const response = await api.put(`/admin/vendors/${vendorId}/unsuspend`);
+    return response.data;
+  },
+
   // Order management
   getAllOrders: async (params = {}) => {
     const response = await api.get('/admin/orders', { params });

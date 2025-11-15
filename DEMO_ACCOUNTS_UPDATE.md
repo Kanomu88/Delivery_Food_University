@@ -1,228 +1,77 @@
-# อัปเดต Demo Accounts ทั้งระบบ
+# Demo Accounts Update
 
-## 📋 สรุปการอัปเดต
+## 🔑 บัญชีทดสอบ (Demo Accounts)
 
-ได้ทำการอัปเดตบัญชีทดสอบ (Demo Accounts) ในไฟล์เอกสารและโค้ดทั้งหมดให้ตรงกับบัญชีที่มีอยู่จริงใน MongoDB
+**ทุกบัญชีใช้ password เดียวกัน: `password123`**
 
----
+### 👨‍💼 Admin Account
+- **Email:** admin@test.com
+- **Password:** password123
+- **Role:** admin
+- **สิทธิ์:** จัดการ users, vendors, ดูรายงานระบบ
 
-## 🔄 การเปลี่ยนแปลง
+### 🏪 Vendor Account
+- **Email:** vendor1@test.com
+- **Password:** password123
+- **Role:** vendor
+- **ร้าน:** ร้านvendor1
+- **สิทธิ์:** จัดการเมนู, orders, ดูรายงานยอดขาย
 
-### บัญชีเก่า (ลบแล้ว):
-- ❌ `admin@canteen.com`
-- ❌ `vendor1@canteen.com`
-- ❌ `vendor2@canteen.com`
-- ❌ `vendor3@canteen.com`
+### 👤 Customer Account
+- **Email:** customer1@test.com
+- **Password:** password123
+- **Role:** customer
+- **สิทธิ์:** สั่งอาหาร, ดูประวัติ orders
 
-### บัญชีใหม่ (ใช้งานจริง):
-- ✅ `admin@test.com`
-- ✅ `vendor1@test.com`
-- ✅ `customer1@test.com`
+## 🌐 Production URLs
 
----
+- **Frontend:** https://frontend-ten-mu-38.vercel.app
+- **Backend:** https://backend-one-alpha-39.vercel.app
 
-## 👥 บัญชีทดสอบปัจจุบัน
+## 📊 ข้อมูลในระบบ
 
-### 1. Admin Account 👨‍💼
-```
-Email:    admin@test.com
-Password: admin123
-Name:     Admin
-Role:     admin
-```
+- **Users:** 3 (admin, vendor1, customer1)
+- **Vendors:** 1 (ร้านvendor1 - approved)
+- **Menu Items:** 10 items
+- **Orders:** 30 orders (รายได้ ฿4,710)
 
-### 2. Vendor Account 🏪
-```
-Email:    vendor1@test.com
-Password: password123
-Name:     ร้านอาหารทดสอบ 1
-Role:     vendor
-Location: โรงอาหารกลาง
-Menus:    0 รายการ (ต้องเพิ่มเมนูใหม่)
-```
+## 🎯 การใช้งาน
 
-### 3. Customer Account 👤
-```
-Email:    customer1@test.com
-Password: password123
-Name:     ลูกค้าทดสอบ 1
-Role:     customer
-Phone:    0898765432
-```
+### วิธีที่ 1: ใช้ปุ่มกรอกอัตโนมัติ
+1. ไปที่หน้า Login: https://frontend-ten-mu-38.vercel.app/login
+2. คลิกปุ่ม "ใช้บัญชีนี้" ใต้บัญชีที่ต้องการ
+3. ระบบจะกรอกข้อมูลอัตโนมัติ
+4. กด Login
 
----
+### วิธีที่ 2: กรอกเอง
+1. กรอก Email และ Password
+2. Password ทุกบัญชีคือ: `password123`
+3. กด Login
 
-## 📝 ไฟล์ที่อัปเดต (13 ไฟล์)
+## ✅ ฟีเจอร์ที่ทดสอบได้
 
-### เอกสาร Markdown (7 ไฟล์):
-1. ✅ `README.md` - เพิ่มส่วน Demo Accounts
-2. ✅ `QUICK_START.md` - อัปเดตบัญชีและเมนู
-3. ✅ `TEST_RESULTS.md` - อัปเดตตารางบัญชีทดสอบ
-4. ✅ `PRODUCTION_READY_FINAL.md` - อัปเดตบัญชีและคำอธิบาย
-5. ✅ `SYSTEM_READY.md` - อัปเดตบัญชีและวิธีใช้งาน
-6. ✅ `VENDOR_DASHBOARD_READY.md` - อัปเดตบัญชี Vendor
-7. ✅ `FINAL_FIX_SUMMARY.md` - อัปเดต email ที่ถูกต้อง
+### Admin
+- ✅ ดูรายการ users (/admin/users)
+- ✅ แบน/ยกเลิกแบน users
+- ✅ ดูรายการ vendors (/admin/vendors)
+- ✅ อนุมัติ/ระงับ vendors
+- ✅ ดูรายงานระบบ (/admin/reports)
 
-### โค้ด Frontend (1 ไฟล์):
-8. ✅ `frontend/src/pages/LoginPage.jsx` - อัปเดตปุ่ม Quick Login
+### Vendor
+- ✅ จัดการเมนู (/vendor/menu)
+- ✅ จัดการ orders (/vendor/orders)
+- ✅ ดูรายงานยอดขาย (/vendor/reports)
+- ✅ Dashboard (/vendor/dashboard)
 
-### Scripts (4 ไฟล์):
-9. ✅ `scripts/testFinalSystem.js` - อัปเดต email ในการทดสอบ
-10. ✅ `scripts/testAllPages.js` - อัปเดตรายการบัญชีทดสอบ
-11. ✅ `scripts/testLogin.js` - อัปเดต accounts array
-12. ✅ `scripts/seedProduction.js` - (ไม่ได้แก้ไข - ใช้สำหรับ production)
+### Customer
+- ✅ ดูเมนูอาหาร (/menu)
+- ✅ สั่งอาหาร
+- ✅ ชำระเงิน
+- ✅ ดูประวัติ orders (/orders)
 
-### เอกสารใหม่ (1 ไฟล์):
-13. ✅ `DEMO_ACCOUNTS_UPDATE.md` - เอกสารนี้
+## 📝 หมายเหตุ
 
----
-
-## 🎯 การเปลี่ยนแปลงในแต่ละไฟล์
-
-### 1. LoginPage.jsx
-**เปลี่ยนจาก:**
-```jsx
-onClick={() => setFormData({ email: 'vendor1@canteen.com', password: 'password123' })}
-onClick={() => setFormData({ email: 'admin@canteen.com', password: 'password123' })}
-```
-
-**เป็น:**
-```jsx
-onClick={() => setFormData({ email: 'vendor@test.com', password: 'password123' })}
-onClick={() => setFormData({ email: 'admin@test.com', password: 'password123' })}
-```
-
-### 2. Test Scripts
-**เปลี่ยนจาก:**
-```javascript
-{ email: 'vendor1@canteen.com', password: 'password123', role: 'vendor' }
-{ email: 'admin@canteen.com', password: 'password123', role: 'admin' }
-```
-
-**เป็น:**
-```javascript
-{ email: 'vendor@test.com', password: 'password123', role: 'vendor' }
-{ email: 'admin@test.com', password: 'password123', role: 'admin' }
-```
-
-### 3. Documentation
-**เปลี่ยนจาก:**
-- Vendor 1, 2, 3 (3 ร้าน)
-- Admin: admin@canteen.com
-
-**เป็น:**
-- Vendor เดียว (ร้านอาหารตามสั่ง - 25 เมนู)
-- Admin: admin@test.com
-
----
-
-## ✅ ผลลัพธ์
-
-### ก่อนอัปเดต:
-- ❌ บัญชีในเอกสารไม่ตรงกับฐานข้อมูล
-- ❌ มีบัญชีหลายร้านแต่ใช้ไม่ได้
-- ❌ ปุ่ม Quick Login ใช้ไม่ได้
-- ❌ Test scripts ใช้ email ผิด
-
-### หลังอัปเดต:
-- ✅ บัญชีในเอกสารตรงกับฐานข้อมูล 100%
-- ✅ มีบัญชีเดียวต่อ Role (ชัดเจน)
-- ✅ ปุ่ม Quick Login ใช้งานได้
-- ✅ Test scripts ใช้ email ถูกต้อง
-- ✅ เอกสารทุกไฟล์สอดคล้องกัน
-
----
-
-## 🧪 การทดสอบ
-
-### ทดสอบ Quick Login:
-1. เปิดหน้า Login
-2. คลิกปุ่ม "ใช้บัญชีนี้" ใต้แต่ละ Role
-3. ตรวจสอบว่า email และ password ถูกกรอกอัตโนมัติ
-4. คลิก Login
-5. ✅ ควร Login สำเร็จ
-
-### ทดสอบ Scripts:
-```bash
-# ทดสอบ Login
-node scripts/testLogin.js
-
-# ทดสอบระบบทั้งหมด
-node scripts/testFinalSystem.js
-
-# ทดสอบทุกหน้า
-node scripts/testAllPages.js
-```
-
----
-
-## 📊 สถิติการอัปเดต
-
-```
-┌─────────────────────────┬──────────┐
-│ รายการ                  │ จำนวน   │
-├─────────────────────────┼──────────┤
-│ ไฟล์ที่อัปเดต           │ 13 ไฟล์  │
-│ บัญชีที่ลบ              │ 4 บัญชี  │
-│ บัญชีที่เหลือ           │ 3 บัญชี  │
-│ เมนูในระบบ             │ 25 รายการ│
-│ ร้านค้าในระบบ          │ 1 ร้าน   │
-└─────────────────────────┴──────────┘
-```
-
----
-
-## 🔍 ตรวจสอบความถูกต้อง
-
-### คำสั่งตรวจสอบ:
-```bash
-# ดูผู้ใช้ทั้งหมด
-cd backend
-node scripts/listUsers.js
-
-# ดูเมนูทั้งหมด
-node scripts/checkMenus.js
-
-# ทดสอบ Login
-node scripts/testLogin.js
-```
-
-### ผลลัพธ์ที่คาดหวัง:
-```
-✅ ผู้ใช้ทั้งหมด: 3 บัญชี
-   - admin@test.com (admin)
-   - vendor@test.com (vendor)
-   - customer@test.com (customer)
-
-✅ เมนูทั้งหมด: 25 รายการ
-   - ร้านอาหารตามสั่ง
-
-✅ Login ทุกบัญชี: สำเร็จ
-```
-
----
-
-## 📚 เอกสารที่เกี่ยวข้อง
-
-1. **USER_CLEANUP_SUMMARY.md** - สรุปการลบผู้ใช้ที่ซ้ำกัน
-2. **CHECKOUT_MENU_IMPROVEMENTS.md** - การปรับปรุงหน้า Checkout และเมนู
-3. **QUICK_START.md** - คู่มือเริ่มต้นใช้งาน
-4. **README.md** - เอกสารหลักของโปรเจค
-
----
-
-## 🎉 สรุป
-
-การอัปเดต Demo Accounts ครั้งนี้ทำให้:
-1. ✅ บัญชีในเอกสารตรงกับฐานข้อมูล
-2. ✅ ปุ่ม Quick Login ใช้งานได้
-3. ✅ Test scripts ใช้ email ถูกต้อง
-4. ✅ เอกสารทุกไฟล์สอดคล้องกัน
-5. ✅ ง่ายต่อการทดสอบและใช้งาน
-
----
-
-**วันที่อัปเดต**: 9 พฤศจิกายน 2025
-**สถานะ**: ✅ เสร็จสมบูรณ์
-**ไฟล์ที่อัปเดต**: 13 ไฟล์
-**บัญชีในระบบ**: 3 บัญชี (Customer, Vendor, Admin)
+- บัญชีเหล่านี้ใช้สำหรับทดสอบระบบเท่านั้น
+- ทุกบัญชีใช้ password เดียวกัน: `password123`
+- ข้อมูลเป็น production data จริง
+- ระบบพร้อมใช้งานแล้ว 🎉

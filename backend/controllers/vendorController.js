@@ -284,12 +284,20 @@ export const getSalesReport = async (req, res) => {
       return acc;
     }, {});
 
+    const dailySales = Object.values(salesByDate).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
     res.json({
       success: true,
       data: {
         totalRevenue,
         totalOrders,
-        salesByDate: Object.values(salesByDate).sort((a, b) => new Date(a.date) - new Date(b.date)),
+        averageOrderValue,
+        dailySales: dailySales.map(day => ({
+          date: day.date,
+          revenue: day.revenue,
+          orders: day.orders,
+        })),
       },
     });
   } catch (error) {

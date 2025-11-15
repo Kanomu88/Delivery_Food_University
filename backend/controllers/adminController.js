@@ -19,6 +19,7 @@ export const getAllUsers = async (req, res) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const users = await User.find(query)
+      .select('-password -refreshToken')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });
@@ -28,7 +29,7 @@ export const getAllUsers = async (req, res) => {
     res.json({
       success: true,
       data: {
-        users: users.map(user => user.toPublicJSON()),
+        users,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -79,10 +80,14 @@ export const toggleUserBan = async (req, res) => {
     user.status = user.status === 'banned' ? 'active' : 'banned';
     await user.save();
 
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse.refreshToken;
+
     res.json({
       success: true,
       message: user.status === 'banned' ? 'User banned successfully' : 'User unbanned successfully',
-      data: { user: user.toPublicJSON() },
+      data: { user: userResponse },
     });
   } catch (error) {
     console.error('Toggle user ban error:', error);
@@ -209,6 +214,43 @@ export const suspendVendor = async (req, res) => {
       error: {
         code: 'SERVER_ERROR',
         message: 'Error suspending vendor',
+      },
+    });
+  }
+};
+
+// Unsuspend vendor (reactivate)
+export const unsuspendVendor = async (req, res) => {
+  try {
+    const vendor = await Vendor.findById(req.params.id);
+
+    if (!vendor) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Vendor not found',
+        },
+      });
+    }
+
+    vendor.status = 'approved';
+    await vendor.save();
+
+    // TODO: Send notification to vendor
+
+    res.json({
+      success: true,
+      message: 'Vendor unsuspended successfully',
+      data: { vendor },
+    });
+  } catch (error) {
+    console.error('Unsuspend vendor error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Error unsuspending vendor',
       },
     });
   }

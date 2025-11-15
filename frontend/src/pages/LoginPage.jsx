@@ -73,12 +73,12 @@ const LoginPage = () => {
           </p>
           <div className="demo-account">
             <strong>👨‍💼 แอดมิน (Admin)</strong>
-            <div><code>admin@test.com</code> / <code>admin123</code></div>
+            <div><code>admin@test.com</code> / <code>password123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'admin@test.com', password: 'admin123' })}
+              onClick={() => setFormData({ email: 'admin@test.com', password: 'password123' })}
             >
               ใช้บัญชีนี้
             </button>
