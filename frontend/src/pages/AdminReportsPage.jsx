@@ -23,6 +23,11 @@ const AdminReportsPage = () => {
   const fetchReportRequests = async () => {
     try {
       setLoading(true);
+      // Temporary: Show empty list
+      setReportRequests([]);
+      showNotification('ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา', 'info');
+      
+      /* TODO: Enable when backend is ready
       const queryParams = filter !== 'all' ? `?status=${filter}` : '';
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/reports/requests${queryParams}`,
@@ -37,6 +42,7 @@ const AdminReportsPage = () => {
       if (data.success) {
         setReportRequests(data.data.reportRequests);
       }
+      */
     } catch (error) {
       console.error('Error fetching report requests:', error);
       showNotification('ไม่สามารถโหลดคำขอรายงานได้', 'error');

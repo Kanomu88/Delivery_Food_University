@@ -58,6 +58,10 @@ const VendorReportsPage = () => {
   }
 
   const handleRequestReport = async () => {
+    // Temporary: Show message instead of API call
+    showNotification('ฟีเจอร์นี้กำลังอยู่ระหว่างการพัฒนา กรุณาติดต่อแอดมินโดยตรง', 'info');
+    
+    /* TODO: Enable when backend is ready
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/reports/request`, {
         method: 'POST',
@@ -78,6 +82,7 @@ const VendorReportsPage = () => {
       console.error('Request report error:', error);
       showNotification('ไม่สามารถส่งคำขอรายงานได้', 'error');
     }
+    */
   };
 
   return (
