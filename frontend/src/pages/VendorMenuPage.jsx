@@ -5,6 +5,7 @@ import { useNotification } from '../contexts/NotificationContext';
 import { getImageUrl } from '../utils/imageHelper';
 import Loading from '../components/common/Loading';
 import Modal from '../components/common/Modal';
+import DeleteConfirmModal from '../components/common/DeleteConfirmModal';
 import './VendorMenuPage.css';
 
 const VendorMenuPage = () => {
@@ -28,6 +29,8 @@ const VendorMenuPage = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
 
   useEffect(() => {
     fetchMenuItems();
@@ -148,9 +151,12 @@ const VendorMenuPage = () => {
       }
 
       const menuData = {
-        ...formData,
+        name: formData.name,
+        description: formData.description,
         price: parseFloat(formData.price),
-        image: imageUrl,
+        category: formData.category,
+        imageUrl: imageUrl,
+        isAvailable: formData.isAvailable,
       };
 
       if (editingItem) {
@@ -187,17 +193,20 @@ const VendorMenuPage = () => {
     }
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm(t('vendor.menu.confirmDelete'))) {
-      return;
-    }
+  const handleDelete = (item) => {
+    setDeletingItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingItem) return;
 
     try {
-      await menuService.deleteMenuItem(item._id);
-      showNotification(t('vendor.menu.deleteSuccess'), 'success');
+      await menuService.deleteMenuItem(deletingItem._id);
+      showNotification('ลบเมนูสำเร็จ', 'success');
       fetchMenuItems();
     } catch (error) {
-      showNotification(t('vendor.menu.deleteError'), 'error');
+      showNotification('ไม่สามารถลบเมนูได้', 'error');
     }
   };
 
@@ -411,6 +420,18 @@ const VendorMenuPage = () => {
           </div>
         </form>
       </Modal>
+
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeletingItem(null);
+        }}
+        onConfirm={confirmDelete}
+        title="ยืนยันการลบเมนู"
+        message="คุณแน่ใจหรือไม่ที่จะลบเมนูนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้"
+        itemName={deletingItem?.name}
+      />
     </div>
   );
 };
