@@ -62,22 +62,37 @@ const PaymentPage = () => {
     },
   });
 
-  const mockPaymentMutation = useMutation({
-    mutationFn: paymentService.mockPaymentSuccess,
+  const processPaymentMutation = useMutation({
+    mutationFn: ({ orderId, paymentMethod }) => 
+      paymentService.processPayment(orderId, paymentMethod),
     onSuccess: () => {
-      navigate(`/orders/${orderId}`);
+      // Redirect to success page
+      navigate(`/payment-success/${orderId}`);
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.error?.message || 'เกิดข้อผิดพลาดในการชำระเงิน';
+      showNotification(errorMessage, 'error');
     },
   });
 
   const handleInitiatePayment = () => {
-    initiatePaymentMutation.mutate({
-      orderId,
-      method: selectedMethod,
+    // Simulate payment initiation
+    setPaymentData({
+      transactionId: `TXN${Date.now()}`,
+      qrCode: selectedMethod === 'qr_code' 
+        ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=PAYMENT_' + orderId
+        : null,
+      paymentUrl: selectedMethod === 'debit_card'
+        ? '#'
+        : null,
     });
   };
 
-  const handleMockPayment = () => {
-    mockPaymentMutation.mutate(orderId);
+  const handleConfirmPayment = () => {
+    processPaymentMutation.mutate({
+      orderId,
+      paymentMethod: selectedMethod,
+    });
   };
 
   const handleRetryPayment = () => {
@@ -97,9 +112,19 @@ const PaymentPage = () => {
 
         <div className="payment-content">
           <div className="order-info">
-            <h2>{t('payment.orderInfo')}</h2>
-            <p><strong>{t('payment.orderNumber')}:</strong> {order?.orderNumber}</p>
-            <p><strong>{t('payment.amount')}:</strong> ฿{order?.totalAmount?.toFixed(2)}</p>
+            <h2>ข้อมูลคำสั่งซื้อ</h2>
+            <div className="info-row">
+              <span className="info-label">หมายเลขคำสั่งซื้อ:</span>
+              <span className="info-value">#{order?._id?.slice(-6)}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">จำนวนรายการ:</span>
+              <span className="info-value">{order?.items?.length} รายการ</span>
+            </div>
+            <div className="info-row total-row">
+              <span className="info-label">ยอดชำระ:</span>
+              <span className="info-value amount">฿{order?.totalAmount?.toFixed(2)}</span>
+            </div>
           </div>
 
           {paymentError && (
@@ -186,34 +211,53 @@ const PaymentPage = () => {
                 {initiatePaymentMutation.isPending ? t('common.loading') : t('payment.proceed')}
               </button>
 
-              <div className="mock-payment">
-                <p>{t('payment.testMode')}</p>
-                <button 
-                  onClick={handleMockPayment}
-                  className="btn btn-secondary"
-                  disabled={mockPaymentMutation.isPending}
-                >
-                  {t('payment.mockSuccess')}
-                </button>
-              </div>
+
             </div>
           ) : paymentData ? (
             <div className="payment-display">
               {selectedMethod === 'qr_code' && paymentData.qrCode && (
                 <div className="qr-payment">
-                  <h2>{t('payment.scanQR')}</h2>
+                  <h2>สแกน QR Code เพื่อชำระเงิน</h2>
                   <img src={paymentData.qrCode} alt="QR Code" className="qr-code" />
-                  <p>{t('payment.transactionId')}: {paymentData.transactionId}</p>
+                  <p>รหัสธุรกรรม: {paymentData.transactionId}</p>
+                  <p className="payment-amount">ยอดชำระ: ฿{order?.totalAmount?.toFixed(2)}</p>
+                  <button 
+                    onClick={handleConfirmPayment}
+                    className="btn btn-primary btn-block"
+                    disabled={processPaymentMutation.isPending}
+                  >
+                    {processPaymentMutation.isPending ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน'}
+                  </button>
                 </div>
               )}
 
-              {selectedMethod === 'debit_card' && paymentData.paymentUrl && (
+              {selectedMethod === 'debit_card' && (
                 <div className="card-payment">
-                  <h2>{t('payment.redirecting')}</h2>
-                  <p>{t('payment.redirectMessage')}</p>
-                  <a href={paymentData.paymentUrl} className="btn btn-primary">
-                    {t('payment.goToPayment')}
-                  </a>
+                  <h2>ชำระเงินด้วยบัตรเดบิต</h2>
+                  <div className="card-form">
+                    <div className="form-group">
+                      <label>หมายเลขบัตร</label>
+                      <input type="text" placeholder="1234 5678 9012 3456" className="form-control" />
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>วันหมดอายุ</label>
+                        <input type="text" placeholder="MM/YY" className="form-control" />
+                      </div>
+                      <div className="form-group">
+                        <label>CVV</label>
+                        <input type="text" placeholder="123" className="form-control" />
+                      </div>
+                    </div>
+                    <p className="payment-amount">ยอดชำระ: ฿{order?.totalAmount?.toFixed(2)}</p>
+                    <button 
+                      onClick={handleConfirmPayment}
+                      className="btn btn-primary btn-block"
+                      disabled={processPaymentMutation.isPending}
+                    >
+                      {processPaymentMutation.isPending ? 'กำลังดำเนินการ...' : 'ชำระเงิน'}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

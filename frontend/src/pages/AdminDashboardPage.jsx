@@ -26,10 +26,20 @@ const AdminDashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await adminService.getSystemReports();
+      const response = await adminService.getDashboardStats();
+      console.log('Admin dashboard data:', response);
       setDashboardData(response.data || {});
     } catch (error) {
-      showNotification(t('admin.dashboard.loadError'), 'error');
+      console.error('Dashboard error:', error);
+      showNotification('ไม่สามารถโหลดข้อมูลได้', 'error');
+      // Set default data
+      setDashboardData({
+        totalUsers: 0,
+        totalVendors: 0,
+        totalMenus: 0,
+        totalOrders: 0,
+        totalRevenue: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -42,41 +52,44 @@ const AdminDashboardPage = () => {
   return (
     <div className="admin-dashboard-page">
       <div className="dashboard-header">
-        <h1>{t('admin.dashboard.title')}</h1>
+        <h1>แดชบอร์ดผู้ดูแลระบบ</h1>
       </div>
 
       <div className={`dashboard-stats ${statsAnimated ? 'animated' : ''}`}>
         <div className="stat-card" style={{ '--delay': '0.1s' }}>
           <div className="stat-icon">👥</div>
           <div className="stat-content">
-            <h3 className="stat-number">{dashboardData?.users?.total || 0}</h3>
-            <p>{t('admin.dashboard.totalUsers')}</p>
+            <h3 className="stat-number">{dashboardData?.totalUsers || 0}</h3>
+            <p>ผู้ใช้ทั้งหมด</p>
           </div>
-          <div className="stat-badge info">Active</div>
         </div>
         <div className="stat-card" style={{ '--delay': '0.2s' }}>
           <div className="stat-icon">🏪</div>
           <div className="stat-content">
-            <h3 className="stat-number">{dashboardData?.vendors?.total || 0}</h3>
-            <p>{t('admin.dashboard.totalVendors')}</p>
+            <h3 className="stat-number">{dashboardData?.totalVendors || 0}</h3>
+            <p>ร้านค้าทั้งหมด</p>
           </div>
-          <div className="stat-trend positive">+{dashboardData?.vendors?.pending || 0} pending</div>
         </div>
         <div className="stat-card" style={{ '--delay': '0.3s' }}>
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon">🍽️</div>
           <div className="stat-content">
-            <h3 className="stat-number">{dashboardData?.orders?.total || 0}</h3>
-            <p>{t('admin.dashboard.totalOrders')}</p>
+            <h3 className="stat-number">{dashboardData?.totalMenus || 0}</h3>
+            <p>เมนูทั้งหมด</p>
           </div>
-          <div className="stat-trend positive">+15%</div>
         </div>
         <div className="stat-card" style={{ '--delay': '0.4s' }}>
+          <div className="stat-icon">📦</div>
+          <div className="stat-content">
+            <h3 className="stat-number">{dashboardData?.totalOrders || 0}</h3>
+            <p>คำสั่งซื้อทั้งหมด</p>
+          </div>
+        </div>
+        <div className="stat-card" style={{ '--delay': '0.5s' }}>
           <div className="stat-icon">💰</div>
           <div className="stat-content">
-            <h3 className="stat-number">฿{dashboardData?.revenue?.total?.toLocaleString() || 0}</h3>
-            <p>{t('admin.dashboard.totalRevenue')}</p>
+            <h3 className="stat-number">฿{dashboardData?.totalRevenue?.toLocaleString() || 0}</h3>
+            <p>รายได้ทั้งหมด</p>
           </div>
-          <div className="stat-trend positive">+22%</div>
         </div>
       </div>
 

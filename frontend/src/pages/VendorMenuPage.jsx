@@ -36,11 +36,12 @@ const VendorMenuPage = () => {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const data = await menuService.getVendorMenus();
-      setMenuItems(data.menus || []);
+      const response = await menuService.getVendorMenus();
+      console.log('Vendor menus response:', response);
+      setMenuItems(response.data || []);
     } catch (error) {
       console.error('Error fetching menus:', error);
-      showNotification(error.response?.data?.error?.message || t('vendor.menu.loadError'), 'error');
+      showNotification(error.response?.data?.error?.message || 'ไม่สามารถโหลดเมนูได้', 'error');
     } finally {
       setLoading(false);
     }

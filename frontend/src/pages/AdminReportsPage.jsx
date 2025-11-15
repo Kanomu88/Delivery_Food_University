@@ -28,14 +28,14 @@ const AdminReportsPage = () => {
   const fetchReports = async (start, end) => {
     try {
       setLoading(true);
-      const params = {};
-      if (start) params.startDate = start;
-      if (end) params.endDate = end;
-      
-      const response = await adminService.getSystemReports(params);
+      // Use dashboard stats instead of reports endpoint
+      const response = await adminService.getDashboardStats();
+      console.log('Reports data:', response);
       setReportData(response.data || {});
     } catch (error) {
-      showNotification(t('admin.reports.loadError'), 'error');
+      console.error('Reports error:', error);
+      showNotification('ไม่สามารถโหลดรายงานได้', 'error');
+      setReportData({});
     } finally {
       setLoading(false);
     }

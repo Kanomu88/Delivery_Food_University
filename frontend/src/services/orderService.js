@@ -12,7 +12,7 @@ export const orderService = {
   },
 
   getVendorOrders: async (params = {}) => {
-    const response = await api.get('/orders/vendor/orders', { params });
+    const response = await api.get('/vendors/orders', { params });
     return response.data;
   },
 
@@ -22,7 +22,7 @@ export const orderService = {
   },
 
   updateOrderStatus: async (id, status) => {
-    const response = await api.put(`/orders/${id}/status`, { status });
+    const response = await api.patch(`/orders/${id}/status`, { status });
     return response.data;
   },
 

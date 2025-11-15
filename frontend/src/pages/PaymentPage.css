@@ -231,3 +231,46 @@
     transform: translateY(0);
   }
 }
+
+
+/* Enhanced Order Info */
+.order-info .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+}
+
+.order-info .info-row:hover {
+  background: #f9fafb;
+  transform: translateX(5px);
+}
+
+.order-info .info-label {
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.order-info .info-value {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1.05rem;
+}
+
+.order-info .info-value.amount {
+  font-size: 1.75rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.order-info .total-row {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 2px solid var(--primary-color);
+  margin-top: 1rem;
+  padding: 1.25rem;
+}

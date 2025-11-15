@@ -22,7 +22,7 @@ export const vendorService = {
   },
 
   getVendorDashboard: async () => {
-    const response = await api.get('/vendors/dashboard/stats');
+    const response = await api.get('/vendors/dashboard');
     return response.data;
   },
 

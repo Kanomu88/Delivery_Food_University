@@ -16,6 +16,7 @@ const CheckoutPage = () => {
     specialRequests: '',
   });
   const [error, setError] = useState('');
+  const [quickTimeOption, setQuickTimeOption] = useState('');
 
   const createOrderMutation = useMutation({
     mutationFn: orderService.createOrder,
@@ -60,6 +61,22 @@ const CheckoutPage = () => {
     return now.toISOString().slice(0, 16);
   };
 
+  // Calculate maximum pickup time (2 hours from now)
+  const getMaxPickupTime = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 2);
+    return now.toISOString().slice(0, 16);
+  };
+
+  // Quick time options
+  const handleQuickTime = (minutes) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + minutes);
+    const timeString = now.toISOString().slice(0, 16);
+    setFormData({ ...formData, pickupTime: timeString });
+    setQuickTimeOption(minutes.toString());
+  };
+
   if (items.length === 0) {
     navigate('/cart');
     return null;
@@ -91,16 +108,63 @@ const CheckoutPage = () => {
             <h2>{t('checkout.details')}</h2>
             
             <div className="form-group">
-              <label>{t('checkout.pickupTime')}</label>
-              <input
-                type="datetime-local"
-                name="pickupTime"
-                value={formData.pickupTime}
-                onChange={handleChange}
-                min={getMinPickupTime()}
-                required
-              />
-              <small>{t('checkout.pickupTimeNote')}</small>
+              <label>เวลารับอาหาร</label>
+              
+              <div className="quick-time-options">
+                <button
+                  type="button"
+                  className={`quick-time-btn ${quickTimeOption === '15' ? 'active' : ''}`}
+                  onClick={() => handleQuickTime(15)}
+                >
+                  <span className="time-icon">⚡</span>
+                  <span className="time-text">15 นาที</span>
+                </button>
+                <button
+                  type="button"
+                  className={`quick-time-btn ${quickTimeOption === '30' ? 'active' : ''}`}
+                  onClick={() => handleQuickTime(30)}
+                >
+                  <span className="time-icon">🕐</span>
+                  <span className="time-text">30 นาที</span>
+                </button>
+                <button
+                  type="button"
+                  className={`quick-time-btn ${quickTimeOption === '60' ? 'active' : ''}`}
+                  onClick={() => handleQuickTime(60)}
+                >
+                  <span className="time-icon">🕑</span>
+                  <span className="time-text">1 ชั่วโมง</span>
+                </button>
+                <button
+                  type="button"
+                  className={`quick-time-btn ${quickTimeOption === '120' ? 'active' : ''}`}
+                  onClick={() => handleQuickTime(120)}
+                >
+                  <span className="time-icon">🕒</span>
+                  <span className="time-text">2 ชั่วโมง</span>
+                </button>
+              </div>
+
+              <div className="custom-time-section">
+                <label className="custom-time-label">หรือกำหนดเวลาเอง:</label>
+                <input
+                  type="datetime-local"
+                  name="pickupTime"
+                  value={formData.pickupTime}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setQuickTimeOption('');
+                  }}
+                  min={getMinPickupTime()}
+                  max={getMaxPickupTime()}
+                  required
+                  className="custom-time-input"
+                />
+              </div>
+              
+              <small className="time-note">
+                ⏰ เลือกเวลารับอาหาร (15 นาที - 2 ชั่วโมงจากตอนนี้)
+              </small>
             </div>
 
             <div className="form-group">

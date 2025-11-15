@@ -59,10 +59,12 @@ const menuSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   items: [{
     menu: { type: mongoose.Schema.Types.ObjectId, ref: 'Menu' },
     quantity: Number,
     price: Number,
+    name: String,
   }],
   totalAmount: { type: Number, required: true },
   status: { 
@@ -75,6 +77,8 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'failed'],
     default: 'pending'
   },
+  pickupTime: { type: Date },
+  specialRequests: String,
   deliveryAddress: String,
   notes: String,
 }, { timestamps: true });
@@ -213,6 +217,22 @@ app.get('/api/menus', async (req, res) => {
   }
 });
 
+app.get('/api/menus/vendor/my-menus', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
+    }
+
+    const menus = await Menu.find({ vendor: req.user._id })
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, data: menus, count: menus.length });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
 app.get('/api/menus/:id', async (req, res) => {
   try {
     await connectDB();
@@ -246,16 +266,87 @@ app.post('/api/menus', authenticate, async (req, res) => {
   }
 });
 
+app.put('/api/menus/:id', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can update menus' } });
+    }
+
+    const menu = await Menu.findOne({ _id: req.params.id, vendor: req.user._id });
+    if (!menu) {
+      return res.status(404).json({ success: false, error: { message: 'Menu not found' } });
+    }
+
+    Object.assign(menu, req.body);
+    await menu.save();
+
+    res.json({ success: true, data: menu });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.delete('/api/menus/:id', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can delete menus' } });
+    }
+
+    const menu = await Menu.findOneAndDelete({ _id: req.params.id, vendor: req.user._id });
+    if (!menu) {
+      return res.status(404).json({ success: false, error: { message: 'Menu not found' } });
+    }
+
+    res.json({ success: true, message: 'Menu deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
 // Order routes
 app.post('/api/orders', authenticate, async (req, res) => {
   try {
     await connectDB();
-    const order = await Order.create({
-      ...req.body,
-      user: req.user._id
+    const { vendorId, items, pickupTime, specialRequests } = req.body;
+
+    // Get menu items and calculate total
+    const menuIds = items.map(item => item.menuItemId);
+    const menus = await Menu.find({ _id: { $in: menuIds } });
+    
+    let totalAmount = 0;
+    const orderItems = items.map(item => {
+      const menu = menus.find(m => m._id.toString() === item.menuItemId);
+      if (!menu) throw new Error('Menu item not found');
+      
+      const itemTotal = menu.price * item.quantity;
+      totalAmount += itemTotal;
+      
+      return {
+        menu: menu._id,
+        name: menu.name,
+        quantity: item.quantity,
+        price: menu.price,
+      };
     });
 
-    res.status(201).json({ success: true, data: order });
+    const order = await Order.create({
+      user: req.user._id,
+      vendor: vendorId,
+      items: orderItems,
+      totalAmount,
+      pickupTime: pickupTime ? new Date(pickupTime) : null,
+      specialRequests,
+      status: 'pending',
+      paymentStatus: 'pending',
+    });
+
+    const populatedOrder = await Order.findById(order._id)
+      .populate('items.menu')
+      .populate('vendor', 'name email phone');
+
+    res.status(201).json({ success: true, data: { order: populatedOrder } });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }
@@ -286,6 +377,184 @@ app.get('/api/orders/:id', authenticate, async (req, res) => {
     }
 
     res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.patch('/api/orders/:id/status', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    const { status } = req.body;
+    
+    const order = await Order.findById(req.params.id)
+      .populate('items.menu')
+      .populate('user', 'name email phone')
+      .populate('vendor', 'name email phone');
+      
+    if (!order) {
+      return res.status(404).json({ success: false, error: { message: 'Order not found' } });
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Payment routes
+app.post('/api/payments/process', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    const { orderId, paymentMethod } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, error: { message: 'Order not found' } });
+    }
+
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, error: { message: 'Unauthorized' } });
+    }
+
+    // Simulate payment processing
+    order.paymentStatus = 'paid';
+    order.status = 'preparing'; // เปลี่ยนสถานะเป็น preparing หลังชำระเงิน
+    await order.save();
+
+    const populatedOrder = await Order.findById(order._id)
+      .populate('items.menu')
+      .populate('vendor', 'name email phone');
+
+    res.json({ 
+      success: true, 
+      data: { 
+        payment: {
+          orderId: order._id,
+          amount: order.totalAmount,
+          status: 'success',
+          paymentMethod,
+        },
+        order: populatedOrder
+      } 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Vendor routes
+app.get('/api/vendors/orders', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
+    }
+
+    const vendorMenus = await Menu.find({ vendor: req.user._id }).select('_id');
+    const menuIds = vendorMenus.map(m => m._id);
+
+    const orders = await Order.find({ 'items.menu': { $in: menuIds } })
+      .populate('items.menu')
+      .populate('user', 'name email phone')
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/vendors/dashboard', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'vendor') {
+      return res.status(403).json({ success: false, error: { message: 'Only vendors can access this' } });
+    }
+
+    const vendorMenus = await Menu.find({ vendor: req.user._id });
+    const menuIds = vendorMenus.map(m => m._id);
+    
+    const orders = await Order.find({ 'items.menu': { $in: menuIds } });
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const todayOrders = orders.filter(o => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return new Date(o.createdAt) >= today;
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalMenus: vendorMenus.length,
+        totalOrders: orders.length,
+        totalRevenue,
+        todayOrders: todayOrders.length,
+        recentOrders: orders.slice(0, 5)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Admin routes
+app.get('/api/admin/dashboard', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const totalUsers = await User.countDocuments();
+    const totalVendors = await User.countDocuments({ role: 'vendor' });
+    const totalMenus = await Menu.countDocuments();
+    const totalOrders = await Order.countDocuments();
+    const totalRevenue = await Order.aggregate([
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        totalUsers,
+        totalVendors,
+        totalMenus,
+        totalOrders,
+        totalRevenue: totalRevenue[0]?.total || 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/admin/users', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+app.get('/api/admin/vendors', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const vendors = await User.find({ role: 'vendor' }).select('-password');
+    res.json({ success: true, data: vendors });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }

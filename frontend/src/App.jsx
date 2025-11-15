@@ -22,6 +22,7 @@ const OrderDetailPage = lazy(() => import('./pages/OrderDetailPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const PaymentPage = lazy(() => import('./pages/PaymentPage'));
+const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'));
 const VendorDashboardPage = lazy(() => import('./pages/VendorDashboardPage'));
 const VendorOrdersPage = lazy(() => import('./pages/VendorOrdersPage'));
 const VendorMenuPage = lazy(() => import('./pages/VendorMenuPage'));
@@ -99,6 +100,14 @@ function App() {
                       element={
                         <ProtectedRoute allowedRoles={['customer']}>
                           <PaymentPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/payment-success/:orderId"
+                      element={
+                        <ProtectedRoute allowedRoles={['customer']}>
+                          <PaymentSuccessPage />
                         </ProtectedRoute>
                       }
                     />

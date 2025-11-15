@@ -79,13 +79,14 @@ const VendorOrdersPage = () => {
     try {
       const params = {};
       if (filter === 'active') {
-        params.status = 'paid,preparing';
+        params.status = 'preparing,ready';
       }
-      const data = await orderService.getVendorOrders(params);
-      setOrders(data.orders || []);
+      const response = await orderService.getVendorOrders(params);
+      const ordersData = response.data || [];
+      setOrders(ordersData);
     } catch (error) {
       console.error('Error fetching orders:', error);
-      showNotification(t('vendor.orders.loadError') || 'Failed to load orders', 'error');
+      showNotification('ไม่สามารถโหลดคำสั่งซื้อได้', 'error');
     } finally {
       setLoading(false);
     }
@@ -112,13 +113,26 @@ const VendorOrdersPage = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      paid: '#F59E0B',
+      pending: '#F59E0B',
+      confirmed: '#F59E0B',
       preparing: '#3B82F6',
       ready: '#10B981',
       completed: '#6B7280',
       cancelled: '#EF4444',
     };
     return colors[status] || '#6B7280';
+  };
+
+  const getStatusText = (status) => {
+    const statusTexts = {
+      pending: 'รอชำระเงิน',
+      confirmed: 'ยืนยันแล้ว',
+      preparing: 'กำลังเตรียม',
+      ready: 'พร้อมรับ',
+      completed: 'เสร็จสิ้น',
+      cancelled: 'ยกเลิก',
+    };
+    return statusTexts[status] || status;
   };
 
   const formatPickupTime = (date) => {
@@ -142,19 +156,19 @@ const VendorOrdersPage = () => {
   return (
     <div className="vendor-orders-page">
       <div className="orders-header">
-        <h1>{t('vendor.orders.title')}</h1>
+        <h1>คำสั่งซื้อ</h1>
         <div className="orders-filter">
           <button
             className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
             onClick={() => setFilter('active')}
           >
-            {t('vendor.orders.activeOrders')}
+            คำสั่งซื้อที่ต้องทำ
           </button>
           <button
             className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
             onClick={() => setFilter('all')}
           >
-            {t('vendor.orders.allOrders')}
+            ทั้งหมด
           </button>
         </div>
       </div>
@@ -162,55 +176,55 @@ const VendorOrdersPage = () => {
       {sortedOrders.length === 0 ? (
         <div className="no-orders">
           <div className="no-orders-icon">📋</div>
-          <h3>{t('vendor.orders.noOrders')}</h3>
-          <p>{t('vendor.orders.noOrdersMessage')}</p>
+          <h3>ไม่มีคำสั่งซื้อ</h3>
+          <p>ยังไม่มีคำสั่งซื้อในขณะนี้</p>
         </div>
       ) : (
         <div className="orders-queue">
           {sortedOrders.map((order) => (
             <div
               key={order._id}
-              className={`order-card ${order.status === 'paid' || newOrderIds.has(order._id) ? 'new-order' : ''}`}
+              className={`order-card ${order.status === 'preparing' || newOrderIds.has(order._id) ? 'new-order' : ''}`}
             >
               <div className="order-header">
                 <div className="order-number">
-                  <span className="label">{t('vendor.orders.orderNumber')}</span>
-                  <span className="value">#{order.orderNumber}</span>
+                  <span className="label">คำสั่งซื้อ</span>
+                  <span className="value">#{order._id?.slice(-6)}</span>
                 </div>
                 <div
                   className="order-status"
                   style={{ backgroundColor: getStatusColor(order.status) }}
                 >
-                  {t(`order.status.${order.status}`)}
+                  {getStatusText(order.status)}
                 </div>
               </div>
 
               <div className="order-info">
                 <div className="info-row">
                   <span className="icon">👤</span>
-                  <span className="label">{t('vendor.orders.customer')}:</span>
-                  <span className="value">{order.customerId?.username || 'N/A'}</span>
+                  <span className="label">ลูกค้า:</span>
+                  <span className="value">{order.user?.name || 'ไม่ระบุ'}</span>
                 </div>
                 <div className="info-row">
                   <span className="icon">🕐</span>
-                  <span className="label">{t('vendor.orders.pickupTime')}:</span>
-                  <span className="value">{formatPickupTime(order.pickupTime)}</span>
+                  <span className="label">เวลารับอาหาร:</span>
+                  <span className="value">{order.pickupTime ? formatPickupTime(order.pickupTime) : 'ไม่ระบุ'}</span>
                 </div>
                 <div className="info-row">
                   <span className="icon">💰</span>
-                  <span className="label">{t('vendor.orders.total')}:</span>
-                  <span className="value">฿{order.totalAmount.toLocaleString()}</span>
+                  <span className="label">ยอดรวม:</span>
+                  <span className="value">฿{order.totalAmount?.toLocaleString() || 0}</span>
                 </div>
               </div>
 
               <div className="order-items">
-                <h4>{t('vendor.orders.items')}:</h4>
+                <h4>รายการอาหาร:</h4>
                 <ul>
-                  {order.items.map((item, index) => (
+                  {order.items?.map((item, index) => (
                     <li key={index}>
                       <span className="item-name">{item.name}</span>
                       <span className="item-quantity">x{item.quantity}</span>
-                      <span className="item-price">฿{item.subtotal.toLocaleString()}</span>
+                      <span className="item-price">฿{(item.price * item.quantity).toLocaleString()}</span>
                     </li>
                   ))}
                 </ul>
@@ -219,28 +233,12 @@ const VendorOrdersPage = () => {
               {order.specialRequests && (
                 <div className="special-requests">
                   <span className="icon">📝</span>
-                  <span className="label">{t('vendor.orders.specialRequests')}:</span>
+                  <span className="label">คำขอพิเศษ:</span>
                   <p>{order.specialRequests}</p>
                 </div>
               )}
 
               <div className="order-actions">
-                {order.status === 'paid' && (
-                  <button
-                    className="action-btn preparing"
-                    onClick={() => handleStatusUpdate(order._id, 'preparing')}
-                    disabled={updatingOrderId === order._id}
-                  >
-                    {updatingOrderId === order._id ? (
-                      <span className="spinner"></span>
-                    ) : (
-                      <>
-                        <span className="icon">👨‍🍳</span>
-                        {t('vendor.orders.startPreparing')}
-                      </>
-                    )}
-                  </button>
-                )}
                 {order.status === 'preparing' && (
                   <button
                     className="action-btn ready"
@@ -252,7 +250,7 @@ const VendorOrdersPage = () => {
                     ) : (
                       <>
                         <span className="icon">✅</span>
-                        {t('vendor.orders.markReady')}
+                        ทำเสร็จแล้ว - พร้อมรับ
                       </>
                     )}
                   </button>
@@ -268,7 +266,7 @@ const VendorOrdersPage = () => {
                     ) : (
                       <>
                         <span className="icon">🎉</span>
-                        {t('vendor.orders.markCompleted')}
+                        ลูกค้ารับแล้ว
                       </>
                     )}
                   </button>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { vendorService } from '../services/vendorService';
 import Loading from '../components/common/Loading';
 import './VendorDashboardPage.css';
 
@@ -24,19 +25,26 @@ const VendorDashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // Mock data for demo (API not implemented yet)
-      const data = {
-        todayOrders: 12,
-        todayRevenue: 3450,
-        pendingOrders: 3,
-        vendor: {
-          isAcceptingOrders: true
-        }
-      };
-      setDashboardData(data);
-      setIsAcceptingOrders(data.vendor?.isAcceptingOrders ?? true);
+      
+      // Use vendorService which handles auth automatically
+      const result = await vendorService.getVendorDashboard();
+      console.log('Dashboard data:', result);
+      
+      if (result.success) {
+        setDashboardData(result.data);
+        setIsAcceptingOrders(result.data.isAcceptingOrders ?? true);
+      } else {
+        throw new Error(result.error?.message || 'Failed to load dashboard');
+      }
     } catch (error) {
       console.error('Dashboard load error:', error);
+      // Set default data
+      setDashboardData({
+        totalMenus: 0,
+        totalOrders: 0,
+        totalRevenue: 0,
+        todayOrders: 0,
+      });
     } finally {
       setLoading(false);
     }
@@ -44,12 +52,29 @@ const VendorDashboardPage = () => {
 
   const handleToggleOrderAcceptance = async () => {
     try {
-      // Toggle locally (API not implemented yet)
       const newStatus = !isAcceptingOrders;
+      
+      // Update locally first for immediate feedback
       setIsAcceptingOrders(newStatus);
+      
+      // Save to localStorage
+      localStorage.setItem('vendorAcceptingOrders', newStatus.toString());
+      
       console.log('Order acceptance toggled:', newStatus);
+      
+      // TODO: Call API to save to backend when endpoint is ready
+      // const response = await fetch(import.meta.env.VITE_API_URL + '/vendors/toggle-acceptance', {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({ isAcceptingOrders: newStatus })
+      // });
     } catch (error) {
       console.error('Toggle error:', error);
+      // Revert on error
+      setIsAcceptingOrders(!isAcceptingOrders);
     }
   };
 
@@ -60,7 +85,7 @@ const VendorDashboardPage = () => {
   return (
     <div className="vendor-dashboard-page">
       <div className="dashboard-header">
-        <h1>{t('vendor.dashboard.title')}</h1>
+        <h1>แดชบอร์ดร้านค้า</h1>
         <div className="order-acceptance-toggle">
           <label className="toggle-switch">
             <input
@@ -72,61 +97,65 @@ const VendorDashboardPage = () => {
           </label>
           <span className={`toggle-label ${isAcceptingOrders ? 'active' : ''}`}>
             {isAcceptingOrders 
-              ? t('vendor.dashboard.acceptingOrders') 
-              : t('vendor.dashboard.notAcceptingOrders')}
+              ? 'เปิดรับคำสั่งซื้อ' 
+              : 'ปิดรับคำสั่งซื้อ'}
           </span>
         </div>
       </div>
 
       <div className={`dashboard-stats ${statsAnimated ? 'animated' : ''}`}>
         <div className="stat-card" style={{ '--delay': '0.1s' }}>
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon">🍽️</div>
           <div className="stat-content">
-            <h3 className="stat-number">{dashboardData?.todayOrders || 0}</h3>
-            <p>{t('vendor.dashboard.todayOrders')}</p>
+            <h3 className="stat-number">{dashboardData?.totalMenus || 0}</h3>
+            <p>เมนูทั้งหมด</p>
           </div>
-          <div className="stat-trend positive">+12%</div>
         </div>
         <div className="stat-card" style={{ '--delay': '0.2s' }}>
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon">📦</div>
           <div className="stat-content">
-            <h3 className="stat-number">฿{dashboardData?.todayRevenue?.toLocaleString() || 0}</h3>
-            <p>{t('vendor.dashboard.todayRevenue')}</p>
+            <h3 className="stat-number">{dashboardData?.totalOrders || 0}</h3>
+            <p>คำสั่งซื้อทั้งหมด</p>
           </div>
-          <div className="stat-trend positive">+8%</div>
         </div>
         <div className="stat-card" style={{ '--delay': '0.3s' }}>
-          <div className="stat-icon">⏳</div>
+          <div className="stat-icon">💰</div>
           <div className="stat-content">
-            <h3 className="stat-number">{dashboardData?.pendingOrders || 0}</h3>
-            <p>{t('vendor.dashboard.pendingOrders')}</p>
+            <h3 className="stat-number">฿{dashboardData?.totalRevenue?.toLocaleString() || 0}</h3>
+            <p>รายได้ทั้งหมด</p>
           </div>
-          <div className="stat-badge urgent">{t('common.urgent')}</div>
+        </div>
+        <div className="stat-card" style={{ '--delay': '0.4s' }}>
+          <div className="stat-icon">📅</div>
+          <div className="stat-content">
+            <h3 className="stat-number">{dashboardData?.todayOrders || 0}</h3>
+            <p>คำสั่งซื้อวันนี้</p>
+          </div>
         </div>
       </div>
 
       <div className="dashboard-navigation">
-        <Link to="/vendor/orders" className="nav-card" style={{ '--delay': '0.4s' }}>
+        <Link to="/vendor/orders" className="nav-card" style={{ '--delay': '0.5s' }}>
           <div className="nav-icon">📋</div>
           <div className="nav-content">
-            <h3>{t('vendor.dashboard.orderQueue')}</h3>
-            <p>{t('vendor.dashboard.orderQueueDesc')}</p>
+            <h3>คำสั่งซื้อ</h3>
+            <p>จัดการคำสั่งซื้อและอัปเดตสถานะ</p>
           </div>
           <div className="nav-arrow">→</div>
         </Link>
-        <Link to="/vendor/menu" className="nav-card" style={{ '--delay': '0.5s' }}>
+        <Link to="/vendor/menu" className="nav-card" style={{ '--delay': '0.6s' }}>
           <div className="nav-icon">🍽️</div>
           <div className="nav-content">
-            <h3>{t('vendor.dashboard.menuManagement')}</h3>
-            <p>{t('vendor.dashboard.menuManagementDesc')}</p>
+            <h3>จัดการเมนู</h3>
+            <p>เพิ่ม แก้ไข หรือลบเมนูอาหาร</p>
           </div>
           <div className="nav-arrow">→</div>
         </Link>
-        <Link to="/vendor/reports" className="nav-card" style={{ '--delay': '0.6s' }}>
+        <Link to="/vendor/reports" className="nav-card" style={{ '--delay': '0.7s' }}>
           <div className="nav-icon">📊</div>
           <div className="nav-content">
-            <h3>{t('vendor.dashboard.salesReports')}</h3>
-            <p>{t('vendor.dashboard.salesReportsDesc')}</p>
+            <h3>รายงาน</h3>
+            <p>ดูรายงานยอดขายและสถิติ</p>
           </div>
           <div className="nav-arrow">→</div>
         </Link>

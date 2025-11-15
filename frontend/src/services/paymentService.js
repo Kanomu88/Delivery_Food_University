@@ -25,4 +25,12 @@ export const paymentService = {
     const response = await api.post('/payments/mock-success', { orderId });
     return response.data;
   },
+
+  processPayment: async (orderId, paymentMethod) => {
+    const response = await api.post('/payments/process', { 
+      orderId, 
+      paymentMethod 
+    });
+    return response.data;
+  },
 };
