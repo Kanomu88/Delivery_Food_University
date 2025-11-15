@@ -20,7 +20,7 @@ const ReportGeneratorModal = ({ request, onClose, onSuccess }) => {
   const fetchVendors = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reports/vendors`,
+        `${import.meta.env.VITE_API_URL}/reports/vendors`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -47,7 +47,7 @@ const ReportGeneratorModal = ({ request, onClose, onSuccess }) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reports/generate/${request._id}`,
+        `${import.meta.env.VITE_API_URL}/reports/generate/${request._id}`,
         {
           method: 'POST',
           headers: {

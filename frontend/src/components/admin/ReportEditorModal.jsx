@@ -51,7 +51,7 @@ const ReportEditorModal = ({ request, onClose, onSuccess }) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reports/update/${request._id}`,
+        `${import.meta.env.VITE_API_URL}/reports/update/${request._id}`,
         {
           method: 'PUT',
           headers: {

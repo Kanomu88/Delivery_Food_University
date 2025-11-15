@@ -25,7 +25,7 @@ const AdminReportsPage = () => {
       setLoading(true);
       const queryParams = filter !== 'all' ? `?status=${filter}` : '';
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reports/requests${queryParams}`,
+        `${import.meta.env.VITE_API_URL}/reports/requests${queryParams}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
