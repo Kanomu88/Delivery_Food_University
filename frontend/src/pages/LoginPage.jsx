@@ -72,37 +72,37 @@ const LoginPage = () => {
             คลิกปุ่มด้านล่างเพื่อกรอกข้อมูลอัตโนมัติ
           </p>
           <div className="demo-account">
-            <strong>👤 ลูกค้า (Customer)</strong>
-            <div><code>customer@test.com</code> / <code>password123</code></div>
+            <strong>👨‍💼 แอดมิน (Admin)</strong>
+            <div><code>admin@test.com</code> / <code>admin123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'customer@test.com', password: 'password123' })}
+              onClick={() => setFormData({ email: 'admin@test.com', password: 'admin123' })}
             >
               ใช้บัญชีนี้
             </button>
           </div>
           <div className="demo-account">
             <strong>🏪 ร้านค้า (Vendor)</strong>
-            <div><code>vendor@test.com</code> / <code>password123</code></div>
+            <div><code>vendor1@test.com</code> / <code>password123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'vendor@test.com', password: 'password123' })}
+              onClick={() => setFormData({ email: 'vendor1@test.com', password: 'password123' })}
             >
               ใช้บัญชีนี้
             </button>
           </div>
           <div className="demo-account">
-            <strong>👨‍💼 แอดมิน (Admin)</strong>
-            <div><code>admin@test.com</code> / <code>password123</code></div>
+            <strong>👤 ลูกค้า (Customer)</strong>
+            <div><code>customer1@test.com</code> / <code>password123</code></div>
             <button 
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', fontSize: '0.85em' }}
-              onClick={() => setFormData({ email: 'admin@test.com', password: 'password123' })}
+              onClick={() => setFormData({ email: 'customer1@test.com', password: 'password123' })}
             >
               ใช้บัญชีนี้
             </button>

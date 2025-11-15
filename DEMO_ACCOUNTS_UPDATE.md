@@ -16,37 +16,38 @@
 
 ### บัญชีใหม่ (ใช้งานจริง):
 - ✅ `admin@test.com`
-- ✅ `vendor@test.com`
-- ✅ `customer@test.com`
+- ✅ `vendor1@test.com`
+- ✅ `customer1@test.com`
 
 ---
 
 ## 👥 บัญชีทดสอบปัจจุบัน
 
-### 1. Customer Account 👤
+### 1. Admin Account 👨‍💼
 ```
-Email:    customer@test.com
-Password: password123
-Username: customer1
-Role:     customer
+Email:    admin@test.com
+Password: admin123
+Name:     Admin
+Role:     admin
 ```
 
 ### 2. Vendor Account 🏪
 ```
-Email:    vendor@test.com
+Email:    vendor1@test.com
 Password: password123
-Username: vendor1
+Name:     ร้านอาหารทดสอบ 1
 Role:     vendor
-Shop:     ร้านอาหารตามสั่ง
-Menus:    25 รายการ
+Location: โรงอาหารกลาง
+Menus:    0 รายการ (ต้องเพิ่มเมนูใหม่)
 ```
 
-### 3. Admin Account 👨‍💼
+### 3. Customer Account 👤
 ```
-Email:    admin@test.com
+Email:    customer1@test.com
 Password: password123
-Username: admin1
-Role:     admin
+Name:     ลูกค้าทดสอบ 1
+Role:     customer
+Phone:    0898765432
 ```
 
 ---

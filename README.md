@@ -143,31 +143,41 @@ Frontend will run on `http://localhost:5173`
 
 For testing purposes, use these pre-configured accounts:
 
-### Customer Account 👤
+### Admin Account 👨‍💼
 ```
-Email:    customer@test.com
-Password: password123
-Username: customer1
+Email:    admin@test.com
+Password: admin123
 ```
 **Capabilities:**
-- Browse 25 menu items
+- Manage all users
+- Manage all vendors
+- View system reports
+- Monitor all orders
+
+### Vendor Account 🏪
+```
+Email:    vendor1@test.com
+Password: password123
+Shop:     ร้านอาหารทดสอบ 1
+Location: โรงอาหารกลาง
+```
+**Capabilities:**
+- Manage menu items
+- View incoming orders
+- Update order status
+- View sales reports
+
+### Customer Account 👤
+```
+Email:    customer1@test.com
+Password: password123
+```
+**Capabilities:**
+- Browse menu items
 - Search and filter menus
 - Add items to cart
 - Place orders
 - Track order status
-
-### Vendor Account 🏪
-```
-Email:    vendor@test.com
-Password: password123
-Username: vendor1
-Shop:     ร้านอาหารตามสั่ง
-```
-**Capabilities:**
-- Manage 25 menu items (11 main dishes, 4 snacks, 6 beverages, 4 desserts)
-- View incoming orders
-- Update order status
-- View sales reports
 - Manage shop profile
 
 ### Admin Account 👨‍💼
