@@ -276,7 +276,7 @@
   display: none;
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .mobile-menu-toggle {
     display: flex;
     background: linear-gradient(135deg, #5B9AA0 0%, #9BCCD2 100%);
@@ -307,7 +307,6 @@
 
 /* Mobile Menu Overlay */
 .mobile-menu-overlay {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -318,12 +317,6 @@
   animation: fadeIn 0.3s ease;
   backdrop-filter: blur(2px);
   cursor: pointer;
-}
-
-@media (max-width: 968px) {
-  .mobile-menu-overlay {
-    display: block;
-  }
 }
 
 @keyframes fadeIn {
@@ -347,7 +340,7 @@
 }
 
 /* Responsive Design - Tablet & Mobile */
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .header .container {
     position: relative;
   }
