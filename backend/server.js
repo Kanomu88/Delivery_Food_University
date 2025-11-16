@@ -29,8 +29,14 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: [
+      'https://frontend-ten-mu-38.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      process.env.CLIENT_URL
+    ].filter(Boolean),
     methods: ['GET', 'POST'],
+    credentials: true
   },
 });
 
@@ -40,7 +46,22 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
-app.use(cors());
+
+// CORS configuration for production
+const corsOptions = {
+  origin: [
+    'https://frontend-ten-mu-38.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
