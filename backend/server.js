@@ -30,7 +30,6 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: [
-      'https://frontend-jnps4mmbj-tests-projects-1317f198.vercel.app',
       'https://frontend-ten-mu-38.vercel.app',
       'http://localhost:5173',
       'http://localhost:3000',
@@ -52,7 +51,6 @@ app.use(helmet({
 // CORS configuration for production
 const corsOptions = {
   origin: [
-    'https://frontend-jnps4mmbj-tests-projects-1317f198.vercel.app',
     'https://frontend-ten-mu-38.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000',
