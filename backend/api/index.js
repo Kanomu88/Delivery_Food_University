@@ -835,12 +835,34 @@ app.get('/api/admin/vendors', authenticate, async (req, res) => {
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });
 
+    // Calculate orders and revenue for each vendor
+    const vendorsWithStats = await Promise.all(vendors.map(async (vendor) => {
+      // Get vendor's menus
+      const vendorMenus = await Menu.find({ vendorId: vendor._id }).select('_id');
+      const menuIds = vendorMenus.map(m => m._id);
+
+      // Get orders containing vendor's menus
+      const orders = await Order.find({
+        'items.menu': { $in: menuIds },
+        paymentStatus: 'paid'
+      });
+
+      const totalOrders = orders.length;
+      const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+      return {
+        ...vendor.toObject(),
+        totalOrders,
+        totalRevenue
+      };
+    }));
+
     const total = await Vendor.countDocuments(query);
 
     res.json({
       success: true,
       data: {
-        vendors,
+        vendors: vendorsWithStats,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
