@@ -35,6 +35,11 @@ const Header = () => {
         </Link>
 
         <nav className={`nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          {/* Mobile Menu Close Button */}
+          <button className="mobile-menu-close" onClick={closeMobileMenu}>
+            ✕
+          </button>
+          
           <Link to="/menu" onClick={closeMobileMenu}>{t('nav.menu')}</Link>
           {user && user.role === 'customer' && (
             <>
@@ -47,6 +52,7 @@ const Header = () => {
                 }}
               >
                 <span className="cart-icon">🛒</span>
+                <span>ตะกร้า</span>
                 {items.length > 0 && (
                   <span className="cart-badge">{items.length}</span>
                 )}
@@ -58,11 +64,26 @@ const Header = () => {
               <Link to="/vendor/dashboard" onClick={closeMobileMenu}>{t('nav.dashboard')}</Link>
               <Link to="/vendor/orders" onClick={closeMobileMenu}>{t('nav.orders')}</Link>
               <Link to="/vendor/menu" onClick={closeMobileMenu}>{t('nav.menuManagement')}</Link>
-              <VendorNotificationBell />
+              <Link to="/vendor/reports" onClick={closeMobileMenu}>{t('nav.reports')}</Link>
             </>
           )}
           {user && user.role === 'admin' && (
-            <Link to="/admin" onClick={closeMobileMenu}>{t('nav.admin')}</Link>
+            <>
+              <Link to="/admin" onClick={closeMobileMenu}>{t('nav.dashboard')}</Link>
+              <Link to="/admin/users" onClick={closeMobileMenu}>จัดการผู้ใช้</Link>
+              <Link to="/admin/vendors" onClick={closeMobileMenu}>จัดการร้านค้า</Link>
+              <Link to="/admin/reports" onClick={closeMobileMenu}>รายงาน</Link>
+            </>
+          )}
+          
+          {/* User Info in Mobile Menu */}
+          {user && (
+            <div className="mobile-user-info">
+              <span className="mobile-user-name">{user.name || user.email}</span>
+              <button onClick={() => { logout(); closeMobileMenu(); }} className="btn btn-secondary mobile-logout-btn">
+                {t('auth.logout')}
+              </button>
+            </div>
           )}
         </nav>
 
