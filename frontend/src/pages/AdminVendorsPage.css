@@ -89,6 +89,18 @@
 .vendors-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px;
+}
+
+@media (max-width: 768px) {
+  .vendors-table {
+    font-size: 0.875rem;
+  }
+  
+  .vendors-table th,
+  .vendors-table td {
+    padding: var(--spacing-sm);
+  }
 }
 
 .vendors-table thead {

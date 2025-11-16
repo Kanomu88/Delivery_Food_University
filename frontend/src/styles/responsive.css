@@ -326,3 +326,264 @@ button, a, input[type="checkbox"], input[type="radio"] {
     text-align: left;
   }
 }
+
+/* Admin & Vendor Pages Responsive */
+@media (max-width: 1024px) {
+  /* Dashboard Stats Grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Tables - Make scrollable */
+  .users-table-container,
+  .vendors-table-container,
+  .orders-table-container,
+  .menus-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .users-table,
+  .vendors-table,
+  .orders-table,
+  .menus-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Dashboard Stats Grid - Stack on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Page Header */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: var(--spacing-md);
+  }
+  
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  /* Filters Section */
+  .filters-section {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .search-box,
+  .filter-group {
+    width: 100%;
+  }
+  
+  .search-input,
+  .filter-select {
+    width: 100%;
+  }
+  
+  /* Action Buttons */
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+  
+  .action-btn {
+    width: 100%;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+  
+  /* Tables - Show minimal columns on mobile */
+  .users-table th:nth-child(3),
+  .users-table td:nth-child(3),
+  .users-table th:nth-child(4),
+  .users-table td:nth-child(4),
+  .vendors-table th:nth-child(3),
+  .vendors-table td:nth-child(3),
+  .vendors-table th:nth-child(5),
+  .vendors-table td:nth-child(5) {
+    display: none;
+  }
+  
+  /* Modal Content */
+  .vendor-details-content,
+  .user-details-content {
+    padding: var(--spacing-md);
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .detail-label {
+    font-weight: 600;
+  }
+  
+  /* Charts Container */
+  .charts-container {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Report Filters */
+  .report-filters {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .date-range {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .date-range input {
+    width: 100%;
+  }
+  
+  /* Menu Form */
+  .menu-form .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Order Items */
+  .order-items {
+    overflow-x: auto;
+  }
+  
+  .order-items table {
+    min-width: 500px;
+  }
+  
+  /* Status Badges */
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Tablet Specific Adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .charts-container {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .action-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 640px) {
+  /* Ensure all buttons are touch-friendly */
+  button,
+  .btn,
+  a.btn {
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+
+  /* Improve form inputs on mobile */
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+
+  /* Better spacing for mobile */
+  .page-content {
+    padding: var(--spacing-4) var(--spacing-3);
+  }
+
+  /* Stack all flex containers on mobile */
+  .flex-row-mobile-stack {
+    flex-direction: column !important;
+  }
+
+  /* Full width cards on mobile */
+  .card,
+  .stat-card,
+  .menu-card {
+    width: 100%;
+  }
+
+  /* Improve table scrolling */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
+
+  /* Better modal on mobile */
+  .modal {
+    padding: var(--spacing-4);
+  }
+
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Improve image loading on mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Better spacing for lists */
+  .list-item {
+    padding: var(--spacing-3);
+  }
+
+  /* Improve notification positioning */
+  .notification,
+  .toast {
+    left: var(--spacing-3);
+    right: var(--spacing-3);
+    width: auto;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 968px) and (orientation: landscape) {
+  .hero {
+    padding: var(--spacing-6) 0;
+  }
+
+  .modal-content {
+    max-height: 85vh;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .header,
+  .filters-section,
+  .action-buttons,
+  .btn,
+  button {
+    display: none !important;
+  }
+  
+  .page-header {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  table {
+    page-break-inside: auto;
+  }
+  
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}
