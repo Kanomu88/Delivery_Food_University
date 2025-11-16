@@ -88,9 +88,15 @@
   gap: var(--space-1);
   align-items: center;
   background: rgba(239, 246, 255, 0.5);
-  /* padding: var(--space-2); */
+  padding: var(--space-2);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(30, 64, 175, 0.08);
+}
+
+/* Hide mobile-only elements on desktop */
+.mobile-menu-close,
+.mobile-user-info {
+  display: none;
 }
 
 .header .nav a,
@@ -327,16 +333,6 @@
   to {
     opacity: 1;
   }
-}
-
-/* Mobile Menu Close Button */
-.mobile-menu-close {
-  display: none;
-}
-
-/* Mobile User Info */
-.mobile-user-info {
-  display: none;
 }
 
 /* Responsive Design - Tablet & Mobile */
