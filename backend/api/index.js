@@ -820,8 +820,101 @@ app.get('/api/admin/vendors', authenticate, async (req, res) => {
       return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
     }
 
-    const vendors = await User.find({ role: 'vendor' }).select('-password');
-    res.json({ success: true, data: vendors });
+    const { status, search, page = 1, limit = 20 } = req.query;
+
+    const query = {};
+    if (status) query.status = status;
+    if (search) {
+      query.shopName = { $regex: search, $options: 'i' };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const vendors = await Vendor.find(query)
+      .populate('userId', 'username email')
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 });
+
+    const total = await Vendor.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        vendors,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit)),
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Admin approve vendor
+app.put('/api/admin/vendors/:id/approve', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const vendor = await Vendor.findById(req.params.id);
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor not found' } });
+    }
+
+    vendor.status = 'approved';
+    await vendor.save();
+
+    res.json({ success: true, message: 'Vendor approved successfully', data: { vendor } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Admin suspend vendor
+app.put('/api/admin/vendors/:id/suspend', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const vendor = await Vendor.findById(req.params.id);
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor not found' } });
+    }
+
+    vendor.status = 'suspended';
+    await vendor.save();
+
+    res.json({ success: true, message: 'Vendor suspended successfully', data: { vendor } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+});
+
+// Admin unsuspend vendor
+app.put('/api/admin/vendors/:id/unsuspend', authenticate, async (req, res) => {
+  try {
+    await connectDB();
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Only admins can access this' } });
+    }
+
+    const vendor = await Vendor.findById(req.params.id);
+    if (!vendor) {
+      return res.status(404).json({ success: false, error: { message: 'Vendor not found' } });
+    }
+
+    vendor.status = 'approved';
+    await vendor.save();
+
+    res.json({ success: true, message: 'Vendor unsuspended successfully', data: { vendor } });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });
   }

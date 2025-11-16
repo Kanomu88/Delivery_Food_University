@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+  import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminService } from '../services/adminService';
 import { useNotification } from '../contexts/NotificationContext';
@@ -27,14 +27,21 @@ const AdminVendorsPage = () => {
       setLoading(true);
       const params = {};
       if (statusFilter !== 'all') params.status = statusFilter;
-      
+
       const response = await adminService.getAllVendors(params);
-      
-      // รองรับทั้ง 2 format: { data: { vendors: [...] } } และ { data: [...] }
-      const vendorsData = response.data?.vendors || response.data || [];
-      setVendors(Array.isArray(vendorsData) ? vendorsData : []);
+      console.log('Vendors response:', response);
+
+      // Backend ส่งกลับมาในรูปแบบ: { success: true, data: { vendors: [...], pagination: {...} } }
+      if (response.success && response.data && response.data.vendors) {
+        setVendors(response.data.vendors);
+      } else {
+        console.error('Unexpected response format:', response);
+        setVendors([]);
+      }
     } catch (error) {
+      console.error('Fetch vendors error:', error);
       showNotification(t('admin.vendors.loadError'), 'error');
+      setVendors([]);
     } finally {
       setLoading(false);
     }
